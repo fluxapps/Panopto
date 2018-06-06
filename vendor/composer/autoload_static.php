@@ -178,6 +178,7 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'ilObjectPluginListGUI' => __DIR__ . '/../..' . '/../../../../../../../Services/Repository/classes/class.ilObjectPluginListGUI.php',
         'ilOverlayGUI' => __DIR__ . '/../..' . '/../../../../../../../Services/UIComponent/Overlay/classes/class.ilOverlayGUI.php',
         'ilPanelGUI' => __DIR__ . '/../..' . '/../../../../../../../Services/UIComponent/Panel/classes/class.ilPanelGUI.php',
+        'ilPanoptoConfigGUI' => __DIR__ . '/../..' . '/classes/class.ilPanoptoConfigGUI.php',
         'ilPanoptoPlugin' => __DIR__ . '/../..' . '/classes/class.ilPanoptoPlugin.php',
         'ilPasswordInputGUI' => __DIR__ . '/../..' . '/../../../../../../../Services/Form/classes/class.ilPasswordInputGUI.php',
         'ilPlugin' => __DIR__ . '/../..' . '/../../../../../../../Services/Component/classes/class.ilPlugin.php',
@@ -247,6 +248,8 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'ilUtil' => __DIR__ . '/../..' . '/../../../../../../../Services/Utilities/classes/class.ilUtil.php',
         'ilValidator' => __DIR__ . '/../..' . '/../../../../../../../Services/Repository/classes/class.ilValidator.php',
         'pdoDB' => __DIR__ . '/../..' . '/../../../../../../../Services/ActiveRecord/Connector/DataBase/class.pdoDB.php',
+        'xpanConfig' => __DIR__ . '/../..' . '/classes/Config/class.xpanConfig.php',
+        'xpanConfigFormGUI' => __DIR__ . '/../..' . '/classes/Config/class.xpanConfigFormGUI.php',
         'xpanSettings' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettings.php',
     );
 

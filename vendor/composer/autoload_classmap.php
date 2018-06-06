@@ -177,6 +177,7 @@ return array(
     'ilObjectPluginListGUI' => $baseDir . '/../../../../../../../Services/Repository/classes/class.ilObjectPluginListGUI.php',
     'ilOverlayGUI' => $baseDir . '/../../../../../../../Services/UIComponent/Overlay/classes/class.ilOverlayGUI.php',
     'ilPanelGUI' => $baseDir . '/../../../../../../../Services/UIComponent/Panel/classes/class.ilPanelGUI.php',
+    'ilPanoptoConfigGUI' => $baseDir . '/classes/class.ilPanoptoConfigGUI.php',
     'ilPanoptoPlugin' => $baseDir . '/classes/class.ilPanoptoPlugin.php',
     'ilPasswordInputGUI' => $baseDir . '/../../../../../../../Services/Form/classes/class.ilPasswordInputGUI.php',
     'ilPlugin' => $baseDir . '/../../../../../../../Services/Component/classes/class.ilPlugin.php',
@@ -246,5 +247,7 @@ return array(
     'ilUtil' => $baseDir . '/../../../../../../../Services/Utilities/classes/class.ilUtil.php',
     'ilValidator' => $baseDir . '/../../../../../../../Services/Repository/classes/class.ilValidator.php',
     'pdoDB' => $baseDir . '/../../../../../../../Services/ActiveRecord/Connector/DataBase/class.pdoDB.php',
+    'xpanConfig' => $baseDir . '/classes/Config/class.xpanConfig.php',
+    'xpanConfigFormGUI' => $baseDir . '/classes/Config/class.xpanConfigFormGUI.php',
     'xpanSettings' => $baseDir . '/classes/Settings/class.xpanSettings.php',
 );

@@ -25,7 +25,7 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
         $commands = [
             [
                 "permission" => "read",
-                "cmd" => ilObjPanoptoGUI::CMD_INDEX,
+                "cmd" => ilObjPanoptoGUI::CMD_STANDARD,
                 "default" => true,
             ]
         ];
