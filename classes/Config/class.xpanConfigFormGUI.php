@@ -67,27 +67,21 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
         $input->setRequired(true);
         $this->addItem($input);
 
-        // API Url
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_API_URL), xpanConfig::F_API_URL);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_API_URL . '_info'));
-        $input->setRequired(true);
-        $this->addItem($input);
-
-        // LTI Url
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_LTI_URL), xpanConfig::F_LTI_URL);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_LTI_URL . '_info'));
+        // hostname
+        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_HOSTNAME), xpanConfig::F_HOSTNAME);
+        $input->setInfo($this->parent_gui->txt(xpanConfig::F_HOSTNAME . '_info'));
         $input->setRequired(true);
         $this->addItem($input);
 
         // Consumer Key
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_CONSUMER_KEY), xpanConfig::F_CONSUMER_KEY);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_CONSUMER_KEY . '_info'));
+        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_INSTANCE_NAME), xpanConfig::F_INSTANCE_NAME);
+        $input->setInfo($this->parent_gui->txt(xpanConfig::F_INSTANCE_NAME . '_info'));
         $input->setRequired(true);
         $this->addItem($input);
 
         // Admin Secret
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_ADMIN_SECRET), xpanConfig::F_ADMIN_SECRET);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_ADMIN_SECRET . '_info'));
+        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_APPLICATION_KEY), xpanConfig::F_APPLICATION_KEY);
+        $input->setInfo($this->parent_gui->txt(xpanConfig::F_APPLICATION_KEY . '_info'));
         $input->setRequired(true);
         $this->addItem($input);
 

@@ -11,10 +11,9 @@ class xpanConfig extends ActiveRecord {
     const F_OBJECT_TITLE = 'object_title';
     const F_API_USER = 'api_user';
     const F_API_PASSWORD = 'api_password';
-    const F_API_URL = 'api_url';
-    const F_LTI_URL = 'lti_url';
-    const F_CONSUMER_KEY = 'consumer_key';
-    const F_ADMIN_SECRET = 'admin_secret';
+    const F_HOSTNAME = 'hostname';
+    const F_INSTANCE_NAME = 'instance_name';
+    const F_APPLICATION_KEY = 'application_key';
     const F_USER_ID = 'user_id';
     const SUB_F_LOGIN = 'login';
     const SUB_F_EXT_ACCOUNT = 'external_account';

@@ -14,14 +14,18 @@
   "support": {
     "email": "info@studer-raimann.ch"
   },
-  "minimum-stability": "beta",
+  "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^5.5.9 || ^7.0"
+    "php": "^5.5.9 || ^7.0",
+    "league/oauth1-client": "^1.7",
+    "lucisgit/php-panopto-api": "^1.0"
   },
   "autoload": {
     "classmap": [
       "./classes/",
+      "./src/",
+      "../../../../../../../Services/Object",
       "../../../../../../../Services/Table",
       "../../../../../../../Services/Form",
       "../../../../../../../Services/Repository",

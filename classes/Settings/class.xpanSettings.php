@@ -52,7 +52,7 @@ class xpanSettings extends ACtiveRecord {
     /**
      * @return int
      */
-    public function getisOnline() {
+    public function isOnline() {
         return $this->is_online;
     }
 

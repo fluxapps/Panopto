@@ -1,0 +1,16 @@
+conf_object_title#:#Objekttitel
+conf_object_title_info#:#Anzeigename von Panopto-Objekten im Magazin
+conf_api_user#:#API-Benutzer
+conf_api_user_info#:#Benutzer aus Panopto, welcher zur Kommunikation mit der Panopto-API verwendet wird (muss genügend Rechte besitzen).
+conf_api_password#:#API-Passwort
+conf_api_password_info#:#Passwort des API-Benutzers
+conf_hostname#:#Hostname
+conf_hostname_info#:#Ohne http(s)://, z.B. demo.panopto.com
+conf_instance_name#:#Instance Name
+conf_instance_name_info#:#Wird in Panopto unter 'Identity Providers' konfiguriert.
+conf_application_key#:#Application Key
+conf_application_key_info#:#Wird in Panopto unter 'Identity Providers' konfiguriert.
+conf_user_id#:#Benutzeridentifikation
+conf_user_id_info#:#Bestimmt, welches Benutzerfeld an Panopto als Benutzername geschickt wird.
+conf_login#:#Benutzername
+conf_external_account#:#Externer Account

@@ -61,7 +61,7 @@ class ilObjPanoptoAccess extends ilObjectPluginAccess {
         }
 
         if ($a_obj_id === NULL) {
-            $a_obj_id = ilObjH5P::_lookupObjectId($a_ref_id);
+            $a_obj_id = ilObjPanopto::_lookupObjectId($a_ref_id);
         }
 
         if ($a_user_id == NULL) {
