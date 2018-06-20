@@ -1,0 +1,127 @@
+.box {
+	width: 100%;
+	/*border: 1px solid black;*/
+	background-color: white;
+	height: 200px;
+	overflow: hidden;
+	position: relative;
+	margin-bottom: 15px;
+}
+
+.innerContent {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.xpan_image_container {
+	height: 200px;
+	width: 312px;
+	float: left;
+	background-color: black;
+	text-align: center;
+	display: inline;
+	overflow: hidden;
+}
+
+.xpan_video_infos {
+	position: absolute;
+	left: 344px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	word-wrap: break-word;
+	display: inline;
+	width: auto;
+}
+
+.xpan_video_infos h2 {
+	color: black;
+	margin-top: 8px;
+	margin-bottom: 3px;
+}
+
+.xpan_video_infos p {
+	margin-top: 1px;
+	margin-bottom: 1px;
+	color: black;
+}
+
+.xpan_video_infos h2, .xpan_video_infos p {
+	/*display: inline;*/
+	overflow: hidden;
+	-ms-text-overflow: ellipsis;
+	text-overflow:     ellipsis;
+	word-break: break-all;
+	word-wrap: break-word;
+	width: auto;
+	float: left;
+	clear: both;
+}
+
+
+/* PLAY OVERLAY */
+.xpan_play_overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: inherit;
+	width: inherit;
+	opacity: 0;
+	transition: .5s ease;
+	background-color: rgba(0,0,0,.7);
+	vertical-align: middle;
+	display: inline-block;
+	/*background: url('../images/play.svg') center no-repeat;*/
+}
+
+.box:hover .xpan_play_overlay, .box:hover .xpan_play_icon {
+	opacity: 1;
+}
+
+/* this is necessary to center the "play" image */
+.xpan_pseudo_element {
+	height: 100%;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+div.xpan_image_container img.xpan_play_icon {
+	vertical-align: middle;
+	display: inline-block;
+}
+
+div.xpan_image_container img.xpan_preview_image {
+	background: black url('../images/vimp_logo.svg') center no-repeat;
+	background-size: contain;
+}
+
+@media only screen and (max-width : 650px) {
+	/* Tablet view: 2 tiles */
+	.xpan_image_container {
+		width: 100%;
+		height: 172px;
+	}
+
+	.xpan_image_container img {
+		width: 295px;
+		height: 172px;
+	}
+
+	.xpan_video_infos {
+		position: relative;
+		left: 0;
+		float: left;
+		width: 100%;
+		padding-left: 20px;
+	}
+
+	.box {
+		height: 320px;
+	}
+}

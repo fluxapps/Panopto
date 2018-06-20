@@ -11,10 +11,9 @@ class xpanContentGUI extends xpanGUI {
 
     protected function index() {
         $user_key = xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME) . "\\" . xpanConfig::getConfig(xpanConfig::F_API_USER);
-        $auth_code = $this->generate_auth_code($user_key, 'fh-muenster.cloud.panopto.eu', xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY));
-        $client = new panopto_session_soap_client(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), $user_key, $auth_code);
 
-        $panoptoclient = new \Panopto\Client('fh-muenster.cloud.panopto.eu');
+        $arrContextOptions=array("ssl"=>array( "verify_peer"=>false, "verify_peer_name"=>false));
+        $panoptoclient = new \Panopto\Client(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
 //        $panoptoclient->setAuthenticationInfo(xpanConfig::getConfig(xpanConfig::F_API_USER), xpanConfig::getConfig(xpanConfig::F_API_PASSWORD));
         $panoptoclient->setAuthenticationInfo($user_key, '', xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY));
         $auth = $panoptoclient->getAuthenticationInfo();
@@ -25,30 +24,45 @@ class xpanContentGUI extends xpanGUI {
         $pagination->setPageNumber($page);
         $pagination->setMaxNumberResults($perpage);
 
-        $request = new \Panopto\SessionManagement\ListFoldersRequest();
-//        $request->setWildcardSearchNameOnly(true);
-        $request->setPagination($pagination);
-
-//        $param = new \Panopto\SessionManagement\GetFoldersList($auth, $request, ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])));
-        $param = new \Panopto\SessionManagement\GetFoldersList($auth, $request, ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' \(ID: ' . $_GET['ref_id'] . '\)');
-
+        $params = new \Panopto\SessionManagement\GetAllFoldersByExternalId($auth, [$_GET['ref_id']], array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME)));
         /** @var \Panopto\SessionManagement\SessionManagement $session_client */
         $session_client = $panoptoclient->SessionManagement();
-        $result = $session_client->GetFoldersList($param)->getGetFoldersListResult();
+        $folder_result = $session_client->GetAllFoldersByExternalId($params);
 
-//        echo "123";
-//        var_dump($result);exit;
-//        $folder = $client->get_folders_by_id(array('1304e1c9-aced-41dd-9370-a905009656e2'));
-//        echo 'hello';
-//        var_dump($client->get_session_list("e0ccd7a4-7c4f-4003-921f-a8f900c00bf9"));exit;
-//        var_dump($client->get_folders_by_id(array("e0ccd7a4-7c4f-4003-921f-a8f900c00bf9")));exit;
+        $request = new \Panopto\SessionManagement\ListSessionsRequest();
+        $request->setPagination($pagination);
+        $request->setFolderId(array_shift($folder_result->getGetAllFoldersByExternalIdResult()->getFolder())->getId());
+        $params = new \Panopto\SessionManagement\GetSessionsList($auth, $request, '');
+        $sessions_result = $session_client->GetSessionsList($params);
+        $sessions = $sessions_result->getGetSessionsListResult()->getResults()->getSession();
+
+        $tpl = new ilTemplate('tpl.content_list.html', true, true, $this->pl->getDirectory());
+
+        foreach ($sessions as $session) {
+            $tpl->setCurrentBlock('list_item');
+            $tpl->setVariable('SID', $session->getId());
+            $tpl->setVariable('THUMBNAIL', 'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl());
+            $tpl->setVariable('TITLE', $session->getName());
+            $tpl->setVariable('DESCRIPTION', $session->getDescription());
+            $tpl->setVariable('DURATION', $session->getDuration());
+            $tpl->parseCurrentBlock();
+        }
+
+        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css');
+        $this->tpl->setContent($tpl->get());
     }
 
 
-    /*
- *Function to create an api auth code for use when calling methods from the Panopto API.
- */
-    protected function generate_auth_code($userkey, $servername, $applicationkey) {
+
+
+    /**
+     *Function to create an api auth code for use when calling methods from the Panopto API.
+     * @param $userkey
+     * @param $servername
+     * @param $applicationkey
+     * @return string
+     */
+    protected function generateAuthCode($userkey, $servername, $applicationkey) {
         $payload = $userkey . "@" . $servername;
         $signedpayload = $payload . "|" . $applicationkey;
         $authcode = strtoupper(sha1($signedpayload));

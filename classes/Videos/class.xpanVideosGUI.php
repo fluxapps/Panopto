@@ -11,6 +11,7 @@ class xpanVideosGUI extends xpanGUI {
 
     protected function index() {
         $html = xpanLTILaunch::launch();
+        $this->tpl->addJavaScript($this->pl->getDirectory() . '/templates/default/waiter.js');
         $this->tpl->addOnLoadCode('$("#lti_form").submit();');
         $this->tpl->setContent($html);
     }
