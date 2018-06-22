@@ -1056,6 +1056,7 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'xpanSettings' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettings.php',
         'xpanSettingsFormGUI' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettingsFormGUI.php',
         'xpanSettingsGUI' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettingsGUI.php',
+        'xpanUtil' => __DIR__ . '/../..' . '/classes/Util/xpanUtil.php',
         'xpanVideosGUI' => __DIR__ . '/../..' . '/classes/Videos/class.xpanVideosGUI.php',
     );
 

@@ -160,7 +160,7 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
     }
 
     /**
-     * @return ilObjUdfEditor
+     * @return ilObjPanopto
      */
     public function getObject() {
         return $this->object;

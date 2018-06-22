@@ -1,0 +1,17 @@
+conf_object_title#:#Object Title
+conf_object_title_info#:#Displayed name of Panopto objects in the repository
+conf_api_user#:#API User
+conf_api_user_info#:#Panopto user which will be used to communicate with Panopto (must have enough permissions).
+conf_api_password#:#API Password
+conf_api_password_info#:#The API user's password
+conf_hostname#:#Hostname
+conf_hostname_info#:#Without http(s)://, e.g. demo.panopto.com
+conf_instance_name#:#Instance Name
+conf_instance_name_info#:#Is configure in Panopto under 'Identity Providers'
+conf_application_key#:#Application Key
+conf_application_key_info#:#Is configure in Panopto under 'Identity Providers'
+conf_user_id#:#User Identification
+conf_user_id_info#:#Defines which user field is sent to Panopto as user identification
+conf_login#:#Login
+conf_external_account#:#External Account
+msg_no_videos#:#There are no videos yet.

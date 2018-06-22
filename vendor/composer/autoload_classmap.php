@@ -1004,5 +1004,6 @@ return array(
     'xpanSettings' => $baseDir . '/classes/Settings/class.xpanSettings.php',
     'xpanSettingsFormGUI' => $baseDir . '/classes/Settings/class.xpanSettingsFormGUI.php',
     'xpanSettingsGUI' => $baseDir . '/classes/Settings/class.xpanSettingsGUI.php',
+    'xpanUtil' => $baseDir . '/classes/Util/xpanUtil.php',
     'xpanVideosGUI' => $baseDir . '/classes/Videos/class.xpanVideosGUI.php',
 );
