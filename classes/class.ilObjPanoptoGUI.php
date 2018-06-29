@@ -29,7 +29,7 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
         $cmd = $this->ctrl->getCmd();
 
         if (!ilObjPanoptoAccess::hasReadAccess() && $next_class != "ilinfoscreengui" && $cmd != "infoScreen") {
-            ilUtil::sendFailure($this->pl->txt('access_denied'), true);
+            ilUtil::sendFailure($this->plugin->txt('access_denied'), true);
             $this->ctrl->returnToParent($this);
         }
         $this->tpl->getStandardTemplate();
@@ -131,7 +131,7 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
         $this->tabs_gui->addTab(self::TAB_INFO, $this->lng->txt(self::TAB_INFO . '_short'), $this->ctrl->getLinkTargetByClass(ilInfoScreenGUI::class));
 
         if (ilObjPanoptoAccess::hasWriteAccess()) {
-            $this->tabs_gui->addTab(self::TAB_VIDEOS, $this->lng->txt(self::TAB_VIDEOS), $this->ctrl->getLinkTargetByClass(xpanVideosGUI::class, xpanVideosGUI::CMD_STANDARD));
+            $this->tabs_gui->addTab(self::TAB_VIDEOS, $this->plugin->txt('tab_' . self::TAB_VIDEOS), $this->ctrl->getLinkTargetByClass(xpanVideosGUI::class, xpanVideosGUI::CMD_STANDARD));
             $this->tabs_gui->addTab(self::TAB_SETTINGS, $this->lng->txt(self::TAB_SETTINGS), $this->ctrl->getLinkTargetByClass(xpanSettingsGUI::class, xpanSettingsGUI::CMD_STANDARD));
         }
 
@@ -164,6 +164,13 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
      */
     public function getObject() {
         return $this->object;
+    }
+
+    /**
+     * @return ilPanoptoPlugin|object
+     */
+    protected function getPlugin() {
+        return ilPanoptoPlugin::getInstance();
     }
 
     /**

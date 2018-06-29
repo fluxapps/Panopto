@@ -13,16 +13,16 @@ class xpanLTILaunch {
         global $DIC;
 
         # Load config
-        $launch_url = 'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME);
-        $key = xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME);
-        $secret = xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY);
+        $launch_url = 'https://' . xpanUtil::getServerName();
+        $key = xpanUtil::getInstanceName();
+        $secret = xpanUtil::getApplicationKey();
 
         $launch_data = array(
-            "user_id" => (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $DIC->user()->getLogin() : $DIC->user()->getExternalAccount(),
+            "user_id" => xpanUtil::getUserId(),
             "roles" => "Instructor",
             "resource_link_id" => $_GET['ref_id'],
-            "resource_link_title" => 'ilias_object_' . $_GET['ref_id'],
-//            "resource_link_title" => ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $_GET['ref_id'] . ')',
+//            "resource_link_title" => 'ilias_object_' . $_GET['ref_id'],
+            "resource_link_title" => ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $_GET['ref_id'] . ')',
             "lis_person_name_full" => $DIC->user()->getFullname(),
             "lis_person_name_family" => $DIC->user()->getLastname(),
             "lis_person_name_given" => $DIC->user()->getFirstname(),

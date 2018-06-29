@@ -5,21 +5,23 @@ $chdir = chdir(substr($_SERVER['SCRIPT_FILENAME'], 0, strpos($_SERVER['SCRIPT_FI
 require_once("Services/Init/classes/class.ilInitialisation.php");
 ilInitialisation::initILIAS();
 
-//TODO validate authcode
-
-global $DIC;
-
 require './Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/vendor/autoload.php';
 $expiration = $_GET['expiration'];
-$servername = xpanConfig::getConfig(xpanConfig::F_HOSTNAME);
-$applicationkey = xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY);
-$instancename = xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME);
-$userkey = $instancename . '\\' . (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $DIC->user()->getLogin() : $DIC->user()->getExternalAccount();
+$request_authcode = $_GET['authCode'];
+$servername = xpanUtil::getServerName();
+$application_key = xpanUtil::getApplicationKey();
+$instance_name = xpanUtil::getInstanceName();
+$user_key = xpanUtil::getUserKey();
 
-$payload = 'serverName=' . $servername . '&externalUserKey=' . $userkey . '&expiration=' . $expiration;
+$request_auth_payload = 'serverName=' . $servername . '&expiration=' . $expiration;
+$valid_authcode = xpanUtil::validateAuthCode($request_auth_payload, $request_authcode);
 
-$signedpayload = $payload . "|" . $applicationkey;
-$authcode = strtoupper(sha1($signedpayload));
+if ($valid_authcode && $request_auth_payload) {
+    $payload = 'serverName=' . $servername . '&externalUserKey=' . $user_key . '&expiration=' . $expiration;
+    $authcode = xpanUtil::generateAuthCode($payload);
 
-$url = $_GET['callbackURL'] . '&serverName=' . urlencode($servername) . '&externalUserKey=' . urlencode($userkey) . '&expiration=' . $expiration . '&authCode=' . urlencode($authcode);
-header('Location: ' . $url);
+    $url = $_GET['callbackURL'] . '&serverName=' . urlencode($servername) . '&externalUserKey=' . urlencode($user_key) . '&expiration=' . $expiration . '&authCode=' . urlencode($authcode);
+    header('Location: ' . $url);
+} else {
+    echo 'Invalid Auth Code.';
+}

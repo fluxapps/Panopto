@@ -137,7 +137,7 @@ class xpanContentGUI extends xpanGUI {
     }
 
     /**
-     * @return ilModalGUI
+     * @return String
      */
     protected function getModalPlayer() {
         $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/modal.css');
@@ -149,38 +149,38 @@ class xpanContentGUI extends xpanGUI {
         return $modal->getHTML();
     }
 
-
-    /**
-     * ajax
-     */
-    public function fillModalPlayer() {
-        $mid = $_GET['mid'];
-        $video = xvmpMedium::find($mid);
-        $video_infos = "				
-			<p>{$this->pl->txt(xvmpMedium::F_DURATION)}: {$video->getDurationFormatted()}</p>
-			<p>{$this->pl->txt(xvmpMedium::F_CREATED_AT)}: {$video->getCreatedAt('m.d.Y, H:i')}</p>
-			
-		";
-        foreach (xvmpConf::getConfig(xvmpConf::F_FORM_FIELDS) as $field) {
-            if ($value = $video->getField($field[xvmpConf::F_FORM_FIELD_ID])) {
-                $video_infos .= "<p>{$field[xvmpConf::F_FORM_FIELD_TITLE]}: {$value}</p>";
-            }
-        }
-        $video_infos .= "<p class='xvmp_ellipsis'>{$this->pl->txt(xvmpMedium::F_DESCRIPTION)}: {$video->getDescription()}</p>";
-        $response = new stdClass();
-        $video_player = new xvmpVideoPlayer($video, xvmp::useEmbeddedPlayer($this->getObjId()));
-        $response->html = $video_player->getHTML() . $video_infos;
-        $response->video_title = $video->getTitle();
-        /** @var xvmpUserProgress $progress */
-        $progress = xvmpUserProgress::where(array(xvmpUserProgress::F_USR_ID => $this->user->getId(), xvmpMedium::F_MID => $mid))->first();
-        if ($progress) {
-            $response->time_ranges = json_decode($progress->getRanges());
-        } else {
-            $response->time_ranges = array();
-        }
-        echo json_encode($response);
-        exit;
-    }
+//
+//    /**
+//     * ajax
+//     */
+//    public function fillModalPlayer() {
+//        $mid = $_GET['mid'];
+//        $video = xvmpMedium::find($mid);
+//        $video_infos = "
+//			<p>{$this->pl->txt(xvmpMedium::F_DURATION)}: {$video->getDurationFormatted()}</p>
+//			<p>{$this->pl->txt(xvmpMedium::F_CREATED_AT)}: {$video->getCreatedAt('m.d.Y, H:i')}</p>
+//
+//		";
+//        foreach (xvmpConf::getConfig(xvmpConf::F_FORM_FIELDS) as $field) {
+//            if ($value = $video->getField($field[xvmpConf::F_FORM_FIELD_ID])) {
+//                $video_infos .= "<p>{$field[xvmpConf::F_FORM_FIELD_TITLE]}: {$value}</p>";
+//            }
+//        }
+//        $video_infos .= "<p class='xvmp_ellipsis'>{$this->pl->txt(xvmpMedium::F_DESCRIPTION)}: {$video->getDescription()}</p>";
+//        $response = new stdClass();
+//        $video_player = new xvmpVideoPlayer($video, xvmp::useEmbeddedPlayer($this->getObjId()));
+//        $response->html = $video_player->getHTML() . $video_infos;
+//        $response->video_title = $video->getTitle();
+//        /** @var xvmpUserProgress $progress */
+//        $progress = xvmpUserProgress::where(array(xvmpUserProgress::F_USR_ID => $this->user->getId(), xvmpMedium::F_MID => $mid))->first();
+//        if ($progress) {
+//            $response->time_ranges = json_decode($progress->getRanges());
+//        } else {
+//            $response->time_ranges = array();
+//        }
+//        echo json_encode($response);
+//        exit;
+//    }
 
     /**
      *Function to create an api auth code for use when calling methods from the Panopto API.

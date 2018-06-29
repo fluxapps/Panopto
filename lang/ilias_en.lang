@@ -15,3 +15,4 @@ conf_user_id_info#:#Defines which user field is sent to Panopto as user identifi
 conf_login#:#Login
 conf_external_account#:#External Account
 msg_no_videos#:#There are no videos yet.
+tab_videos#:#Videos
