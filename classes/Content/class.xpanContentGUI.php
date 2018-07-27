@@ -30,7 +30,7 @@ class xpanContentGUI extends xpanGUI {
         $this->folder_id = $this->client->getFolderByExternalId($_GET['ref_id'])->getId();
 
         if (!$this->client->hasUserViewerAccessOnFolder($this->folder_id)) {
-            $this->client->grantCurrentUserAccessToFolder($this->folder_id, xpanClient::ROLE_VIEWER);
+            $this->client->grantUserAccessToFolder($this->folder_id, xpanClient::ROLE_VIEWER);
         }
     }
 

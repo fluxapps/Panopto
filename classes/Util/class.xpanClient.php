@@ -85,6 +85,8 @@ class xpanClient {
     }
 
     /**
+     * Grant multiple users access to folder.
+     *
      * @param array $user_ids
      * @param $folder_id
      * @param $role
@@ -102,16 +104,54 @@ class xpanClient {
             $role
         );
 
+        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
         $access_management->GrantUsersAccessToFolder($params);
     }
 
     /**
+     * Grant single user access to folder. For current user, leave $user_id = 0
+     *
      * @param $folder_id
      * @param $role
+     * @param int $user_id
      */
-    public function grantCurrentUserAccessToFolder($folder_id, $role) {
-        $this->grantUsersAccessToFolder(array(0), $folder_id, $role);
+    public function grantUserAccessToFolder($folder_id, $role, $user_id = 0) {
+        $this->grantUsersAccessToFolder(array($user_id), $folder_id, $role);
+    }
+
+    /**
+     * Grant multiple users viewer access to session.
+     *
+     * @param array $user_ids
+     * @param $session_id
+     */
+    public function grantUsersViewerAccessToSession(array $user_ids, $session_id) {
+        $guids = array();
+        foreach ($user_ids as $user_id) {
+            $guids[] = $this->getUserGuid($user_id);
+        }
+
+        $params = new \Panopto\AccessManagement\GrantUsersViewerAccessToSession(
+            $this->auth,
+            $session_id,
+            $guids
+        );
+
+        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+        $access_management = $this->panoptoclient->AccessManagement();
+        $access_management->GrantUsersViewerAccessToSession($params);
+    }
+
+    /**
+     *
+     * Grant single user viewer access to session. For current user, leave $user_id = 0
+     *
+     * @param $session_id
+     * @param int $user_id
+     */
+    public function grantUserViewerAccessToSession($session_id, $user_id = 0) {
+        $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
     }
 
     /**
@@ -155,23 +195,82 @@ class xpanClient {
     }
 
     /**
+     * @param $user_id
+     * @return \Panopto\AccessManagement\UserAccessDetails
+     */
+    public function getUserAccessDetails($user_id = 0) {
+        static $user_access_details;
+        if (!isset($user_access_details[$user_id])) {
+            $params = new \Panopto\AccessManagement\GetUserAccessDetails(
+                $this->auth,
+                $this->getUserGuid($user_id)
+            );
+
+            /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+            $access_management = $this->panoptoclient->AccessManagement();
+            $user_access_details[$user_id] = $access_management->GetUserAccessDetails($params)->getGetUserAccessDetailsResult();
+        }
+        return $user_access_details[$user_id];
+    }
+
+    /**
+     * @param $session_id
+     * @return \Panopto\AccessManagement\SessionAccessDetails
+     */
+    public function getSessionAccessDetails($session_id) {
+        static $session_access_details;
+        if (!isset($session_access_details[$session_id])) {
+            $params = new \Panopto\AccessManagement\GetSessionAccessDetails(
+                $this->auth,
+                $session_id
+            );
+
+            /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+            $access_management = $this->panoptoclient->AccessManagement();
+            $session_access_details[$session_id] = $access_management->GetSessionAccessDetails($params)->getGetSessionAccessDetailsResult();
+        }
+        return $session_access_details[$session_id];
+    }
+
+    /**
      * @param $folder_id
      * @param int $user_id
-     * @return bool|string
+     * @return bool|string Creator, Viewer or false
      */
     public function getUserAccessOnFolder($folder_id, $user_id = 0) {
-        $user_guid = $this->getUserGuid($user_id);
-        $details = $this->getFolderAccessDetails($folder_id);
-        if (in_array($user_guid, $details->getUsersWithViewerAccess()->getGuid())) {
-            return self::ROLE_VIEWER;
+        $user_details = $this->getUserAccessDetails($user_id);
+        $user_groups_details = $user_details->getGroupMembershipAccess()->getGroupAccessDetails();
+
+        // fetch creator access folders from groups
+        $folders_with_creator_access = array();
+        foreach ($user_groups_details as $user_group_details) {
+            $folder_ids = $user_group_details->getFoldersWithCreatorAccess()->getGuid();
+            if (is_array($folder_ids)) {
+                $folders_with_creator_access = array_merge($folders_with_creator_access, $folder_ids);
+            }
         }
-        if (in_array($user_guid, $details->getUsersWithCreatorAccess()->getGuid())) {
+        $folder_ids = $user_details->getFoldersWithCreatorAccess()->getGuid();
+        $folders_with_creator_access = is_array($folder_ids) ? array_merge($folders_with_creator_access, $folder_ids) : $folders_with_creator_access;
+
+        if (in_array($folder_id, $folders_with_creator_access)) {
             return self::ROLE_CREATOR;
         }
-        if (in_array($user_guid, $details->getUsersWithPublisherAccess()->getGuid())) {
-            return self::ROLE_PUBLISHER;
+
+
+        // fetch viewer access folders from groups
+        $folders_with_viewer_access = array();
+        foreach ($user_groups_details as $user_group_details) {
+            $folder_ids = $user_group_details->getFoldersWithViewerAccess()->getGuid();
+            if (is_array($folder_ids)) {
+                $folders_with_viewer_access = array_merge($folders_with_creator_access, $folder_ids);
+            }
         }
-        return false;
+        $folder_ids = $user_details->getFoldersWithViewerAccess()->getGuid();
+        $folders_with_viewer_access = is_array($folder_ids) ? array_merge($folders_with_viewer_access, $folder_ids) : $folders_with_viewer_access;
+
+        if (in_array($folder_id, $folders_with_viewer_access)) {
+            return self::ROLE_VIEWER;
+        }
     }
 
     /**
@@ -179,9 +278,41 @@ class xpanClient {
      * @return String
      */
     public function getUserGuid($user_id = 0) {
-        global $DIC;
-        $user_id = $user_id ? $user_id : $DIC->user()->getId();
-        return $this->getUserByKey(xpanUtil::getUserKey($user_id))->getUserId();
+        static $user_guids;
+        if (!isset($user_guids[$user_id])) {
+            global $DIC;
+            $user_id = $user_id ? $user_id : $DIC->user()->getId();
+            $user_guids[$user_id] = $this->getUserByKey(xpanUtil::getUserKey($user_id))->getUserId();
+        }
+        return $user_guids[$user_id];
+    }
+
+    /**
+     * @param $session_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function hasUserViewerAccessOnSession($session_id, $user_id = 0) {
+        $user_details = $this->getUserAccessDetails($user_id);
+        $session_details = $this->getSessionAccessDetails($session_id);
+        $folder_details = $session_details->getFolderAccess();
+        $user_groups_details = $user_details->getGroupMembershipAccess()->getGroupAccessDetails();
+        $user_groups = array();
+        foreach ($user_groups_details as $user_group_details) {
+            $user_groups[] = $user_group_details->getGroupId();
+        }
+
+        $sessions_with_viewer_access = $user_details->getSessionsWithViewerAccess()->getGuid();
+        $groups_with_direct_viewer_access = $session_details->getGroupsWithDirectViewerAccess()->getGuid();
+        if (
+            $this->hasUserViewerAccessOnFolder($folder_details->getFolderId(), $user_id)
+            || (is_array($sessions_with_viewer_access) && in_array($session_id, $sessions_with_viewer_access))
+            || (is_array($groups_with_direct_viewer_access) && array_intersect($user_groups, $groups_with_direct_viewer_access))
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -200,7 +331,7 @@ class xpanClient {
      * @return bool
      */
     public function hasUserCreatorAccessOnFolder($folder_id, $user_id = 0) {
-        return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_CREATOR, self::ROLE_PUBLISHER));
+        return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_CREATOR));
     }
 
 
