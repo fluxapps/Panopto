@@ -942,6 +942,7 @@ return array(
     'ilPanoptoConfigGUI' => $baseDir . '/classes/class.ilPanoptoConfigGUI.php',
     'ilPanoptoPlugin' => $baseDir . '/classes/class.ilPanoptoPlugin.php',
     'ilPasswordInputGUI' => $baseDir . '/../../../../../../../Services/Form/classes/class.ilPasswordInputGUI.php',
+    'ilPasswordUtils' => $baseDir . '/../../../../../../../Services/Password/classes/class.ilPasswordUtils.php',
     'ilPasteIntoMultipleItemsExplorer' => $baseDir . '/../../../../../../../Services/Object/classes/class.ilPasteIntoMultipleItemsExplorer.php',
     'ilPlugin' => $baseDir . '/../../../../../../../Services/Component/classes/class.ilPlugin.php',
     'ilPluginAdmin' => $baseDir . '/../../../../../../../Services/Component/classes/class.ilPluginAdmin.php',

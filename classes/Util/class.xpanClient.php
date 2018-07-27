@@ -125,10 +125,60 @@ class xpanClient {
             throw $e;
         }
 
+        if ($return->getUserId() == '00000000-0000-0000-0000-000000000000') {
+            $this->log->write('Status: User Not Found');
+            $this->createUser($user_key);
+
+            try {
+                $this->log->write('*********');
+                $this->log->write('SOAP call "getUserByKey"');
+                $this->log->write("userKey:");
+                $this->log->write(print_r($user_key, true));
+                $return = $user_management->GetUserByKey($params)->getGetUserByKeyResult();
+            } catch (Exception $e) {
+                $this->logException($e, $user_management);
+                throw $e;
+            }
+        }
         $this->log->write('Status: ' . substr($user_management->__last_response_headers, 0, strpos($user_management->__last_response_headers, "\r\n")));
         $this->log->write('Found user with id: ' . $return->getUserId());
 
         return $return;
+    }
+
+    /**
+     * @param $user_key
+     * @throws Exception
+     */
+    public function createUser($user_key) {
+        global $DIC;
+        $this->log->write('*********');
+        $this->log->write('SOAP call "createUser"');
+        $this->log->write("userKey:");
+        $this->log->write(print_r($user_key, true));
+
+        $user = new \Panopto\UserManagement\User();
+        $user->setFirstName($DIC->user()->getFirstname());
+        $user->setLastName($DIC->user()->getLastname());
+        $user->setEmail($DIC->user()->getEmail());
+        $user->setUserKey($user_key);
+
+        $params = new \Panopto\UserManagement\CreateUser(
+            $this->auth,
+            $user,
+            'test123'   //TODO: create password
+        );
+
+        /** @var \Panopto\UserManagement\UserManagement $user_management */
+        $user_management = $this->panoptoclient->UserManagement();
+        try {
+            $user_management->CreateUser($params);
+        } catch (Exception $e) {
+            $this->logException($e, $user_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($user_management->__last_response_headers, 0, strpos($user_management->__last_response_headers, "\r\n")));
     }
 
     /**
@@ -137,6 +187,7 @@ class xpanClient {
      * @param array $user_ids
      * @param $folder_id
      * @param $role
+     * @throws Exception
      */
     public function grantUsersAccessToFolder(array $user_ids, $folder_id, $role) {
         $guids = array();
@@ -177,6 +228,7 @@ class xpanClient {
      * @param $folder_id
      * @param $role
      * @param int $user_id
+     * @throws Exception
      */
     public function grantUserAccessToFolder($folder_id, $role, $user_id = 0) {
         $this->grantUsersAccessToFolder(array($user_id), $folder_id, $role);
@@ -187,6 +239,7 @@ class xpanClient {
      *
      * @param array $user_ids
      * @param $session_id
+     * @throws Exception
      */
     public function grantUsersViewerAccessToSession(array $user_ids, $session_id) {
         $guids = array();
@@ -226,6 +279,7 @@ class xpanClient {
      *
      * @param $session_id
      * @param int $user_id
+     * @throws Exception
      */
     public function grantUserViewerAccessToSession($session_id, $user_id = 0) {
         $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
@@ -233,6 +287,7 @@ class xpanClient {
 
     /**
      * @return mixed
+     * @throws Exception
      */
     public function getSessionsOfFolder($folder_id) {
 
@@ -281,6 +336,7 @@ class xpanClient {
     /**
      * @param $folder_id
      * @return \Panopto\AccessManagement\FolderAccessDetails
+     * @throws Exception
      */
     public function getFolderAccessDetails($folder_id) {
         $this->log->write('*********');
@@ -311,6 +367,7 @@ class xpanClient {
     /**
      * @param $user_id
      * @return \Panopto\AccessManagement\UserAccessDetails
+     * @throws Exception
      */
     public function getUserAccessDetails($user_id = 0) {
         static $user_access_details;
@@ -345,6 +402,7 @@ class xpanClient {
     /**
      * @param $session_id
      * @return \Panopto\AccessManagement\SessionAccessDetails
+     * @throws Exception
      */
     public function getSessionAccessDetails($session_id) {
         static $session_access_details;
@@ -375,9 +433,43 @@ class xpanClient {
     }
 
     /**
+     * @param $user_id
+     * @throws Exception
+     */
+    public function syncExternalUser($user_id) {
+        $this->log->write('*********');
+        $this->log->write('SOAP call "SyncExternalUser"');
+        $this->log->write("ilias user_id:");
+        $this->log->write(print_r($user_id, true));
+
+        $user = new ilObjUser($user_id);
+
+        $params = new \Panopto\UserManagement\SyncExternalUser(
+            $this->auth,
+            $user->getFirstname(),
+            $user->getLastname(),
+            $user->getEmail(),
+            false,
+            array()
+        );
+
+        /** @var \Panopto\UserManagement\UserManagement $user_management */
+        $user_management = $this->panoptoclient->UserManagement();
+        try {
+            $user_management->SyncExternalUser($params);
+        } catch (Exception $e) {
+            $this->logException($e, $user_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($user_management->__last_response_headers, 0, strpos($user_management->__last_response_headers, "\r\n")));
+    }
+
+    /**
      * @param $folder_id
      * @param int $user_id
      * @return bool|string Creator, Viewer or false
+     * @throws Exception
      */
     public function getUserAccessOnFolder($folder_id, $user_id = 0) {
         $user_details = $this->getUserAccessDetails($user_id);
@@ -419,6 +511,7 @@ class xpanClient {
     /**
      * @param int $user_id
      * @return String
+     * @throws Exception
      */
     public function getUserGuid($user_id = 0) {
         static $user_guids;
@@ -434,6 +527,7 @@ class xpanClient {
      * @param $session_id
      * @param int $user_id
      * @return bool
+     * @throws Exception
      */
     public function hasUserViewerAccessOnSession($session_id, $user_id = 0) {
         $user_details = $this->getUserAccessDetails($user_id);
@@ -466,6 +560,7 @@ class xpanClient {
      * @param $folder_id
      * @param int $user_id
      * @return bool
+     * @throws Exception
      */
     public function hasUserViewerAccessOnFolder($folder_id, $user_id = 0) {
         return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_VIEWER, self::ROLE_CREATOR, self::ROLE_PUBLISHER));
@@ -476,6 +571,7 @@ class xpanClient {
      * @param $folder_id
      * @param int $user_id
      * @return bool
+     * @throws Exception
      */
     public function hasUserCreatorAccessOnFolder($folder_id, $user_id = 0) {
         return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_CREATOR));

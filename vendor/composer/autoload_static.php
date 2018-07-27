@@ -994,6 +994,7 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'ilPanoptoConfigGUI' => __DIR__ . '/../..' . '/classes/class.ilPanoptoConfigGUI.php',
         'ilPanoptoPlugin' => __DIR__ . '/../..' . '/classes/class.ilPanoptoPlugin.php',
         'ilPasswordInputGUI' => __DIR__ . '/../..' . '/../../../../../../../Services/Form/classes/class.ilPasswordInputGUI.php',
+        'ilPasswordUtils' => __DIR__ . '/../..' . '/../../../../../../../Services/Password/classes/class.ilPasswordUtils.php',
         'ilPasteIntoMultipleItemsExplorer' => __DIR__ . '/../..' . '/../../../../../../../Services/Object/classes/class.ilPasteIntoMultipleItemsExplorer.php',
         'ilPlugin' => __DIR__ . '/../..' . '/../../../../../../../Services/Component/classes/class.ilPlugin.php',
         'ilPluginAdmin' => __DIR__ . '/../..' . '/../../../../../../../Services/Component/classes/class.ilPluginAdmin.php',
