@@ -92,7 +92,7 @@ class xpanClient {
     public function grantUsersAccessToFolder(array $user_ids, $folder_id, $role) {
         $guids = array();
         foreach ($user_ids as $user_id) {
-            $guids[] = $this->getUserByKey(xpanUtil::getUserKey($user_id))->getUserId();
+            $guids[] = $this->getUserGuid($user_id);
         }
 
         $params = new \Panopto\AccessManagement\GrantUsersAccessToFolder(
@@ -138,5 +138,71 @@ class xpanClient {
         $sessions = $sessions_result->getGetSessionsListResult()->getResults()->getSession();
         return $sessions;
     }
+
+    /**
+     * @param $folder_id
+     * @return \Panopto\AccessManagement\FolderAccessDetails
+     */
+    public function getFolderAccessDetails($folder_id) {
+        $params = new \Panopto\AccessManagement\GetFolderAccessDetails(
+            $this->auth,
+            $folder_id
+        );
+
+        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+        $access_management = $this->panoptoclient->AccessManagement();
+        return $access_management->GetFolderAccessDetails($params)->getGetFolderAccessDetailsResult();
+    }
+
+    /**
+     * @param $folder_id
+     * @param int $user_id
+     * @return bool|string
+     */
+    public function getUserAccessOnFolder($folder_id, $user_id = 0) {
+        $user_guid = $this->getUserGuid($user_id);
+        $details = $this->getFolderAccessDetails($folder_id);
+        if (in_array($user_guid, $details->getUsersWithViewerAccess()->getGuid())) {
+            return self::ROLE_VIEWER;
+        }
+        if (in_array($user_guid, $details->getUsersWithCreatorAccess()->getGuid())) {
+            return self::ROLE_CREATOR;
+        }
+        if (in_array($user_guid, $details->getUsersWithPublisherAccess()->getGuid())) {
+            return self::ROLE_PUBLISHER;
+        }
+        return false;
+    }
+
+    /**
+     * @param int $user_id
+     * @return String
+     */
+    public function getUserGuid($user_id = 0) {
+        global $DIC;
+        $user_id = $user_id ? $user_id : $DIC->user()->getId();
+        return $this->getUserByKey(xpanUtil::getUserKey($user_id))->getUserId();
+    }
+
+    /**
+     * @param $folder_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function hasUserViewerAccessOnFolder($folder_id, $user_id = 0) {
+        return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_VIEWER, self::ROLE_CREATOR, self::ROLE_PUBLISHER));
+    }
+
+
+    /**
+     * @param $folder_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function hasUserCreatorAccessOnFolder($folder_id, $user_id = 0) {
+        return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_CREATOR, self::ROLE_PUBLISHER));
+    }
+
+
 
 }
