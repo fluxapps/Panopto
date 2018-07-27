@@ -18,17 +18,18 @@ class xpanLTILaunch {
         $secret = xpanUtil::getApplicationKey();
 
         $launch_data = array(
-            "user_id" => xpanUtil::getUserId(),
+            "user_id" => xpanUtil::getUserIdentifier(),
             "roles" => "Instructor",
             "resource_link_id" => $_GET['ref_id'],
 //            "resource_link_title" => 'ilias_object_' . $_GET['ref_id'],
-            "resource_link_title" => ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $_GET['ref_id'] . ')',
+            "resource_link_title" => xpanUtil::getExternalIdOfObjectById(),
             "lis_person_name_full" => $DIC->user()->getFullname(),
             "lis_person_name_family" => $DIC->user()->getLastname(),
             "lis_person_name_given" => $DIC->user()->getFirstname(),
             "lis_person_contact_email_primary" => $DIC->user()->getEmail(),
             "context_id" => $_GET['ref_id'],
-            "context_title" => ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $_GET['ref_id'] . ')',
+//            "context_id" => xpanUtil::getExternalIdOfObjectById(),
+            "context_title" => xpanUtil::getExternalIdOfObjectById(),
             "context_label" => "urn:lti:context-type:ilias/Object_" . $_GET['ref_id'],
             "context_type" => "urn:lti:context-type:ilias/Object",
 //            "launch_presentation_width" => 500,

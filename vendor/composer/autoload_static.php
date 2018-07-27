@@ -1048,6 +1048,7 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'panopto_session_soap_client' => __DIR__ . '/../..' . '/src/SessionManagement/sample_session_soap_client.php',
         'panopto_user_soap_client' => __DIR__ . '/../..' . '/src/UserManagement/sample_user_soap_client.php',
         'pdoDB' => __DIR__ . '/../..' . '/../../../../../../../Services/ActiveRecord/Connector/DataBase/class.pdoDB.php',
+        'xpanClient' => __DIR__ . '/../..' . '/classes/Util/class.xpanClient.php',
         'xpanConfig' => __DIR__ . '/../..' . '/classes/Config/class.xpanConfig.php',
         'xpanConfigFormGUI' => __DIR__ . '/../..' . '/classes/Config/class.xpanConfigFormGUI.php',
         'xpanContentGUI' => __DIR__ . '/../..' . '/classes/Content/class.xpanContentGUI.php',
@@ -1056,7 +1057,7 @@ class ComposerStaticInit97e4937622ba1e718c37bb99a2d86a53
         'xpanSettings' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettings.php',
         'xpanSettingsFormGUI' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettingsFormGUI.php',
         'xpanSettingsGUI' => __DIR__ . '/../..' . '/classes/Settings/class.xpanSettingsGUI.php',
-        'xpanUtil' => __DIR__ . '/../..' . '/classes/Util/xpanUtil.php',
+        'xpanUtil' => __DIR__ . '/../..' . '/classes/Util/class.xpanUtil.php',
         'xpanVideosGUI' => __DIR__ . '/../..' . '/classes/Videos/class.xpanVideosGUI.php',
     );
 

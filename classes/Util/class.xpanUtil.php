@@ -19,13 +19,18 @@ class xpanUtil {
         return xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME);
     }
 
-    public static function getUserId() {
+    public static function getUserIdentifier($user_id = 0) {
         global $DIC;
-        return (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $DIC->user()->getLogin() : $DIC->user()->getExternalAccount();
+        $user = $user_id ? new ilObjUser($user_id) : $DIC->user();
+        return (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $user->getLogin() : $user->getExternalAccount();
     }
 
-    public static function getUserKey() {
-        return self::getInstanceName() . '\\' . self::getUserId();
+    public static function getUserKey($user_id = 0) {
+        return self::getInstanceName() . '\\' . self::getUserIdentifier($user_id);
+    }
+
+    public static function getApiUserKey() {
+        return xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME) . "\\" . xpanConfig::getConfig(xpanConfig::F_API_USER);
     }
 
     public static function generateAuthCode($payload) {
@@ -35,6 +40,16 @@ class xpanUtil {
 
     public static function validateAuthCode($payload, $auth_code) {
         return (self::generateAuthCode($payload) == $auth_code);
+    }
+
+    public static function getExternalIdOfObject(ilObjPanopto $object, $ref_id = 0) {
+        $ref_id = $ref_id ? $ref_id : $_GET['ref_id'];
+        return $object->getTitle() . ' (ID: ' . $ref_id . ')';
+    }
+
+    public static function getExternalIdOfObjectById($ref_id = 0) {
+        $ref_id = $ref_id ? $ref_id : $_GET['ref_id'];
+        return ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $ref_id . ')';
     }
 
 //    public static function getFolderIDForRefID($ref_id = 0) {

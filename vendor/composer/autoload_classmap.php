@@ -996,6 +996,7 @@ return array(
     'panopto_session_soap_client' => $baseDir . '/src/SessionManagement/sample_session_soap_client.php',
     'panopto_user_soap_client' => $baseDir . '/src/UserManagement/sample_user_soap_client.php',
     'pdoDB' => $baseDir . '/../../../../../../../Services/ActiveRecord/Connector/DataBase/class.pdoDB.php',
+    'xpanClient' => $baseDir . '/classes/Util/class.xpanClient.php',
     'xpanConfig' => $baseDir . '/classes/Config/class.xpanConfig.php',
     'xpanConfigFormGUI' => $baseDir . '/classes/Config/class.xpanConfigFormGUI.php',
     'xpanContentGUI' => $baseDir . '/classes/Content/class.xpanContentGUI.php',
@@ -1004,6 +1005,6 @@ return array(
     'xpanSettings' => $baseDir . '/classes/Settings/class.xpanSettings.php',
     'xpanSettingsFormGUI' => $baseDir . '/classes/Settings/class.xpanSettingsFormGUI.php',
     'xpanSettingsGUI' => $baseDir . '/classes/Settings/class.xpanSettingsGUI.php',
-    'xpanUtil' => $baseDir . '/classes/Util/xpanUtil.php',
+    'xpanUtil' => $baseDir . '/classes/Util/class.xpanUtil.php',
     'xpanVideosGUI' => $baseDir . '/classes/Videos/class.xpanVideosGUI.php',
 );
