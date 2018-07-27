@@ -21,13 +21,19 @@ class xpanContentGUI extends xpanGUI {
     /**
      * xpanContentGUI constructor.
      * @param ilObjPanoptoGUI $parent_gui
+     * @throws ilException
      */
     public function __construct(ilObjPanoptoGUI $parent_gui) {
         parent::__construct($parent_gui);
 
         $this->client = xpanClient::getInstance();
 
-        $this->folder_id = $this->client->getFolderByExternalId($_GET['ref_id'])->getId();
+        $folder = $this->client->getFolderByExternalId($_GET['ref_id']);
+        if (!$folder) {
+            throw new ilException('No external folder found for this object.');
+        }
+
+        $this->folder_id = $folder->getId();
 
         if (!$this->client->hasUserViewerAccessOnFolder($this->folder_id)) {
             $this->client->grantUserAccessToFolder($this->folder_id, xpanClient::ROLE_VIEWER);

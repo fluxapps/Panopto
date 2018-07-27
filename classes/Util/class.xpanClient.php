@@ -38,11 +38,17 @@ class xpanClient {
      * @var \Panopto\stdClass
      */
     protected $auth;
+    /**
+     * @var xpanLog
+     */
+    protected $log;
 
     /**
      * xpanClient constructor.
      */
     public function __construct() {
+        $this->log = xpanLog::getInstance();
+
         $arrContextOptions=array("ssl"=>array( "verify_peer"=>false, "verify_peer_name"=>false));
         $this->panoptoclient = new \Panopto\Client(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
 //        $panoptoclient->setAuthenticationInfo(xpanConfig::getConfig(xpanConfig::F_API_USER), xpanConfig::getConfig(xpanConfig::F_API_PASSWORD));
@@ -52,17 +58,40 @@ class xpanClient {
 
     /**
      * @return \Panopto\SessionManagement\Folder[]
+     * @throws Exception
      */
     public function getAllFoldersByExternalId(array $ext_ids) {
-        $params = new \Panopto\SessionManagement\GetAllFoldersByExternalId($this->auth, $ext_ids, array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME)));
+        $this->log->write('*********');
+        $this->log->write('SOAP call "GetAllFoldersByExternalId"');
+        $this->log->write("folderExternalIds:");
+        $this->log->write(print_r($ext_ids, true));
+        $this->log->write("providerNames:");
+        $this->log->write(print_r(array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME)), true));
+
+        $params = new \Panopto\SessionManagement\GetAllFoldersByExternalId(
+            $this->auth,
+            $ext_ids,
+            array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME))
+        );
+
         /** @var \Panopto\SessionManagement\SessionManagement $session_client */
         $session_client = $this->panoptoclient->SessionManagement();
-        return $session_client->GetAllFoldersByExternalId($params)->getGetAllFoldersByExternalIdResult()->getFolder();
+        try {
+            $return = $session_client->GetAllFoldersByExternalId($params)->getGetAllFoldersByExternalIdResult()->getFolder();
+        } catch (Exception $e) {
+            $this->logException($e, $session_client);
+            throw $e;
+        }
+        $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
+        $return = is_array($return) ? $return : array();
+        $this->log->write('Received ' . (int) count($return) . ' object(s).');
+        return $return;
     }
 
     /**
      * @param $ext_id
      * @return \Panopto\SessionManagement\Folder
+     * @throws Exception
      */
     public function getFolderByExternalId($ext_id) {
         return array_shift($this->getAllFoldersByExternalId(array($ext_id)));
@@ -71,17 +100,35 @@ class xpanClient {
     /**
      * @param string $user_key
      * @return \Panopto\UserManagement\User
+     * @throws Exception
      */
     public function getUserByKey($user_key = '') {
+        $user_key = $user_key ? $user_key : xpanUtil::getUserKey();
+
+        $this->log->write('*********');
+        $this->log->write('SOAP call "getUserByKey"');
+        $this->log->write("userKey:");
+        $this->log->write(print_r($user_key, true));
+
         /** @var \Panopto\UserManagement\UserManagement $user_management */
         $user_management = $this->panoptoclient->UserManagement();
 
         $params = new \Panopto\UserManagement\GetUserByKey(
             $this->auth,
-            $user_key ? $user_key : xpanUtil::getUserKey()
+            $user_key
         );
-        $response = $user_management->GetUserByKey($params);
-        return $response->getGetUserByKeyResult();
+
+        try {
+            $return = $user_management->GetUserByKey($params)->getGetUserByKeyResult();
+        } catch (Exception $e) {
+            $this->logException($e, $user_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($user_management->__last_response_headers, 0, strpos($user_management->__last_response_headers, "\r\n")));
+        $this->log->write('Found user with id: ' . $return->getUserId());
+
+        return $return;
     }
 
     /**
@@ -97,6 +144,14 @@ class xpanClient {
             $guids[] = $this->getUserGuid($user_id);
         }
 
+        $this->log->write('*********');
+        $this->log->write('SOAP call "GrantUsersAccessToFolder"');
+        $this->log->write("folderId:");
+        $this->log->write(print_r($folder_id, true));
+        $this->log->write("userIds:");
+        $this->log->write(print_r($guids, true));
+        $this->log->write("role:");
+        $this->log->write(print_r($role, true));
         $params = new \Panopto\AccessManagement\GrantUsersAccessToFolder(
             $this->auth,
             $folder_id,
@@ -106,7 +161,14 @@ class xpanClient {
 
         /** @var \Panopto\AccessManagement\AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
-        $access_management->GrantUsersAccessToFolder($params);
+        try {
+            $access_management->GrantUsersAccessToFolder($params);
+        } catch (Exception $e) {
+            $this->logException($e, $access_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
     }
 
     /**
@@ -132,6 +194,13 @@ class xpanClient {
             $guids[] = $this->getUserGuid($user_id);
         }
 
+        $this->log->write('*********');
+        $this->log->write('SOAP call "GrantUsersViewerAccessToSession"');
+        $this->log->write("sessionId:");
+        $this->log->write(print_r($session_id, true));
+        $this->log->write("userIds:");
+        $this->log->write(print_r($guids, true));
+
         $params = new \Panopto\AccessManagement\GrantUsersViewerAccessToSession(
             $this->auth,
             $session_id,
@@ -140,7 +209,15 @@ class xpanClient {
 
         /** @var \Panopto\AccessManagement\AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
-        $access_management->GrantUsersViewerAccessToSession($params);
+        try {
+            $access_management->GrantUsersViewerAccessToSession($params);
+        } catch (Exception $e) {
+            $this->logException($e, $access_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
+
     }
 
     /**
@@ -158,9 +235,8 @@ class xpanClient {
      * @return mixed
      */
     public function getSessionsOfFolder($folder_id) {
-        $session_client = $this->panoptoclient->SessionManagement();
 
-        $page = 0;
+        $page = 0;  // TODO: implement pagination
         $perpage = 10;
         $pagination = new \Panopto\RemoteRecorderManagement\Pagination();
         $pagination->setPageNumber($page);
@@ -169,13 +245,36 @@ class xpanClient {
         $request = new \Panopto\SessionManagement\ListSessionsRequest();
         $request->setPagination($pagination);
         $request->setFolderId($folder_id);
+
         $states = new \Panopto\SessionManagement\ArrayOfSessionState();
         $states->setSessionState(array(\Panopto\SessionManagement\SessionState::Complete));
         $request->setStates($states);
 
-        $params = new \Panopto\SessionManagement\GetSessionsList($this->auth, $request, '');
-        $sessions_result = $session_client->GetSessionsList($params);
+        $this->log->write('*********');
+        $this->log->write('SOAP call "GetSessionsList"');
+        $this->log->write("request:");
+        $this->log->write(print_r($request, true));
+
+        $params = new \Panopto\SessionManagement\GetSessionsList(
+            $this->auth,
+            $request,
+            ''
+        );
+
+        /** @var \Panopto\SessionManagement\SessionManagement $session_client */
+        $session_client = $this->panoptoclient->SessionManagement();
+        try {
+            $sessions_result = $session_client->GetSessionsList($params);
+        } catch (Exception $e) {
+            $this->logException($e, $session_client);
+            throw $e;
+        }
+
         $sessions = $sessions_result->getGetSessionsListResult()->getResults()->getSession();
+
+        $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
+        $this->log->write('Received ' . (int) count($sessions) . ' object(s).');
+
         return $sessions;
     }
 
@@ -184,6 +283,11 @@ class xpanClient {
      * @return \Panopto\AccessManagement\FolderAccessDetails
      */
     public function getFolderAccessDetails($folder_id) {
+        $this->log->write('*********');
+        $this->log->write('SOAP call "GetFolderAccessDetails"');
+        $this->log->write("folderId:");
+        $this->log->write(print_r($folder_id, true));
+
         $params = new \Panopto\AccessManagement\GetFolderAccessDetails(
             $this->auth,
             $folder_id
@@ -191,7 +295,17 @@ class xpanClient {
 
         /** @var \Panopto\AccessManagement\AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
-        return $access_management->GetFolderAccessDetails($params)->getGetFolderAccessDetailsResult();
+        try {
+            $return = $access_management->GetFolderAccessDetails($params)->getGetFolderAccessDetailsResult();
+        } catch (Exception $e) {
+            $this->logException($e, $access_management);
+            throw $e;
+        }
+
+        $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
+        $this->log->write('Received ' . (int) count($return) . ' object(s).');
+
+        return $return;
     }
 
     /**
@@ -201,14 +315,29 @@ class xpanClient {
     public function getUserAccessDetails($user_id = 0) {
         static $user_access_details;
         if (!isset($user_access_details[$user_id])) {
+            $guid = $this->getUserGuid($user_id);
+            $this->log->write('*********');
+            $this->log->write('SOAP call "GetUserAccessDetails"');
+            $this->log->write("userId:");
+            $this->log->write(print_r($guid, true));
+
             $params = new \Panopto\AccessManagement\GetUserAccessDetails(
                 $this->auth,
-                $this->getUserGuid($user_id)
+                $guid
             );
 
             /** @var \Panopto\AccessManagement\AccessManagement $access_management */
             $access_management = $this->panoptoclient->AccessManagement();
-            $user_access_details[$user_id] = $access_management->GetUserAccessDetails($params)->getGetUserAccessDetailsResult();
+            try {
+                $user_access_details[$user_id] = $access_management->GetUserAccessDetails($params)->getGetUserAccessDetailsResult();
+            } catch (Exception $e) {
+                $this->logException($e, $access_management);
+                throw $e;
+            }
+
+
+            $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
+            $this->log->write('Received ' . (int) count($user_access_details[$user_id]) . ' object(s).');
         }
         return $user_access_details[$user_id];
     }
@@ -220,6 +349,11 @@ class xpanClient {
     public function getSessionAccessDetails($session_id) {
         static $session_access_details;
         if (!isset($session_access_details[$session_id])) {
+            $this->log->write('*********');
+            $this->log->write('SOAP call "GetSessionAccessDetails"');
+            $this->log->write("sessionId:");
+            $this->log->write(print_r($session_id, true));
+
             $params = new \Panopto\AccessManagement\GetSessionAccessDetails(
                 $this->auth,
                 $session_id
@@ -227,7 +361,15 @@ class xpanClient {
 
             /** @var \Panopto\AccessManagement\AccessManagement $access_management */
             $access_management = $this->panoptoclient->AccessManagement();
-            $session_access_details[$session_id] = $access_management->GetSessionAccessDetails($params)->getGetSessionAccessDetailsResult();
+            try {
+                $session_access_details[$session_id] = $access_management->GetSessionAccessDetails($params)->getGetSessionAccessDetailsResult();
+            } catch (Exception $e) {
+                $this->logException($e, $access_management);
+                throw $e;
+            }
+
+            $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
+            $this->log->write('Received ' . (int) count($session_access_details[$session_id]) . ' object(s).');
         }
         return $session_access_details[$session_id];
     }
@@ -240,6 +382,7 @@ class xpanClient {
     public function getUserAccessOnFolder($folder_id, $user_id = 0) {
         $user_details = $this->getUserAccessDetails($user_id);
         $user_groups_details = $user_details->getGroupMembershipAccess()->getGroupAccessDetails();
+        $user_groups_details = is_array($user_groups_details) ? $user_groups_details : array();
 
         // fetch creator access folders from groups
         $folders_with_creator_access = array();
@@ -296,18 +439,22 @@ class xpanClient {
         $user_details = $this->getUserAccessDetails($user_id);
         $session_details = $this->getSessionAccessDetails($session_id);
         $folder_details = $session_details->getFolderAccess();
-        $user_groups_details = $user_details->getGroupMembershipAccess()->getGroupAccessDetails();
-        $user_groups = array();
-        foreach ($user_groups_details as $user_group_details) {
-            $user_groups[] = $user_group_details->getGroupId();
-        }
 
         $sessions_with_viewer_access = $user_details->getSessionsWithViewerAccess()->getGuid();
-        $groups_with_direct_viewer_access = $session_details->getGroupsWithDirectViewerAccess()->getGuid();
+        $sessions_with_viewer_access = is_array($sessions_with_viewer_access) ? $sessions_with_viewer_access : array();
+
+        $user_groups_details = $user_details->getGroupMembershipAccess()->getGroupAccessDetails();
+        $user_groups_details = is_array($user_groups_details) ? $user_groups_details : array();
+        foreach ($user_groups_details as $user_group_details) {
+            $session_ids = $user_group_details->getSessionsWithViewerAccess();
+            if (is_array($session_ids)) {
+                $sessions_with_viewer_access = array_merge($sessions_with_viewer_access, $session_ids);
+            }
+        }
+
         if (
             $this->hasUserViewerAccessOnFolder($folder_details->getFolderId(), $user_id)
-            || (is_array($sessions_with_viewer_access) && in_array($session_id, $sessions_with_viewer_access))
-            || (is_array($groups_with_direct_viewer_access) && array_intersect($user_groups, $groups_with_direct_viewer_access))
+            || in_array($session_id, $sessions_with_viewer_access)
         ) {
             return true;
         }
@@ -334,6 +481,21 @@ class xpanClient {
         return in_array($this->getUserAccessOnFolder($folder_id, $user_id), array(self::ROLE_CREATOR));
     }
 
+    /**
+     * @param $e
+     * @param $soap_client
+     */
+    protected function logException($e, $soap_client) {
+        $this->log->write('ERROR');
+        $this->log->write('Exception:');
+        $this->log->write($e->getMessage() . " ({$e->getCode()})");
+        $this->log->write($e->getTraceAsString());
+        $this->log->write('Request:');
+        $this->log->write($soap_client->__last_request);
+        $this->log->write('Response:');
+        $this->log->write($soap_client->__last_response);
+        $this->log->write('*********');
+    }
 
 
 }

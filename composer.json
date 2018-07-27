@@ -25,6 +25,7 @@
     "classmap": [
       "./classes/",
       "./src/",
+      "../../../../../../../Services/Logging",
       "../../../../../../../Services/Object",
       "../../../../../../../Services/Table",
       "../../../../../../../Services/Form",
