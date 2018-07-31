@@ -36,8 +36,8 @@
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	word-break: break-all;
-	word-wrap: break-word;
+	/*word-break: break-all;*/
+	/*word-wrap: break-word;*/
 	display: inline;
 	width: calc(100% - 410px);
 }
@@ -73,7 +73,7 @@ div.xpan_duration {
 	overflow: hidden;
 	-ms-text-overflow: ellipsis;
 	text-overflow:     ellipsis;
-	word-break: break-all;
+	/*word-break: break-all;*/
 	word-wrap: break-word;
 	width: auto;
 	float: left;
@@ -146,4 +146,41 @@ div.xpan_image_container img.xpan_preview_image {
 	.box {
 		height: 320px;
 	}
+}
+
+.xpan_description {
+	white-space: normal;
+
+}
+
+.xpan_next_button {
+	/*float: right;*/
+}
+
+.xpan_previous_button {
+}
+
+.xpan_pagination_container {
+	display: inline-block;
+
+}
+
+.xpan_pagination {
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	border-radius: 5px;
+	transition: background-color .3s;
+}
+
+.xpan_page_active {
+	/*background-color: #6ea03c;*/
+	background-color: #4c6586;
+	color: white;
+	border-radius: 5px;
+}
+
+.xpan_pagination:hover:not(.xpan_page_active) {
+	background-color: #ddd;
 }

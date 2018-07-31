@@ -35,22 +35,78 @@ class xpanContentGUI extends xpanGUI {
 
         $this->folder_id = $folder->getId();
 
+        // grant user permissions on the fly
         if (!$this->client->hasUserViewerAccessOnFolder($this->folder_id)) {
             $this->client->grantUserAccessToFolder($this->folder_id, xpanClient::ROLE_VIEWER);
         }
     }
 
+    /**
+     * @throws Exception
+     */
     protected function index() {
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
 
-        if (!$sessions) {
+        if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
             return;
         }
 
         $tpl = new ilTemplate('tpl.content_list.html', true, true, $this->pl->getDirectory());
+        $pages = 1 + floor($sessions['count'] % 10);
 
-        foreach ($sessions as $session) {
+        // "previous" button
+        if ($_GET['xpan_page']) {
+            $this->ctrl->setParameter($this, 'xpan_page', $_GET['xpan_page'] - 1);
+            $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
+            // top
+            $tpl->setCurrentBlock('previous_top');  // for some reason, i had to do 2 different blocks for top and bottom pagination
+            $tpl->setVariable('LINK_PREVIOUS', $link);
+            $tpl->parseCurrentBlock();
+            // bottom
+            $tpl->setCurrentBlock('previous_bottom');
+            $tpl->setVariable('LINK_PREVIOUS', $link);
+            $tpl->parseCurrentBlock();
+        }
+
+        // pages
+        for ($i = 1; $i < $pages; $i++) {
+            $this->ctrl->setParameter($this, 'xpan_page', $i - 1);
+            $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
+            // top
+            $tpl->setCurrentBlock('page_top');
+            $tpl->setVariable('LINK_PAGE', $link);
+            if (($i-1) == $_GET['xpan_page']) {
+                $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
+            }
+            $tpl->setVariable('LABEL_PAGE', $i);
+            $tpl->parseCurrentBlock();
+            // bottom
+            $tpl->setCurrentBlock('page_bottom');
+            $tpl->setVariable('LINK_PAGE', $link);
+            if (($i-1) == $_GET['xpan_page']) {
+                $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
+            }
+            $tpl->setVariable('LABEL_PAGE', $i);
+            $tpl->parseCurrentBlock();
+        }
+
+        // "next" button
+        if ($sessions['count'] > (($_GET['xpan_page'] + 1)*10)) {
+            $this->ctrl->setParameter($this, 'xpan_page', $_GET['xpan_page'] + 1);
+            $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
+            // top
+            $tpl->setCurrentBlock('next_top');
+            $tpl->setVariable('LINK_NEXT', $link);
+            $tpl->parseCurrentBlock();
+            // bottom
+            $tpl->setCurrentBlock('next_bottom');
+            $tpl->setVariable('LINK_NEXT', $link);
+            $tpl->parseCurrentBlock();
+        }
+
+        // videos
+        foreach ($sessions['sessions'] as $session) {
             $tpl->setCurrentBlock('list_item');
             $tpl->setVariable('SID', $session->getId());
             $tpl->setVariable('THUMBNAIL', 'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl());
@@ -62,11 +118,14 @@ class xpanContentGUI extends xpanGUI {
 
         $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css');
         $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/Panopto.js');
-//        $this->tpl->addOnLoadCode('$("div.box").each(function(k, e) {$(e).delay(500).width("100%");});');
         $this->tpl->setContent($tpl->get() . $this->getModalPlayer());
     }
 
 
+    /**
+     * @param $duration_in_seconds
+     * @return string
+     */
     protected function formatDuration($duration_in_seconds) {
         $t = floor($duration_in_seconds);
         return sprintf('%02d:%02d:%02d', ($t/3600),($t/60%60), $t%60);

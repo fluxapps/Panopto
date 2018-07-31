@@ -1,5 +1,14 @@
-<a class="xpan_previous_button" href="{LINK_PREVIOUS}">{LABEL_PREVIOUS}</a>
-<a class="xpan_next_button" href="{LINK_NEXT}">{LABEL_NEXT}</a>
+<div class="xpan_pagination_container">
+	<!-- BEGIN previous_top -->
+	<a class="xpan_previous_button xpan_pagination" href="{LINK_PREVIOUS}">&laquo;</a>
+	<!-- END previous_top -->
+	<!-- BEGIN page_top -->
+	<a class="xpan_page xpan_pagination {ADDITIONAL_CLASS}" href="{LINK_PAGE}">{LABEL_PAGE}</a>
+	<!-- END page_top -->
+	<!-- BEGIN next_top -->
+	<a class="xpan_next_button xpan_pagination" href="{LINK_NEXT}">&raquo;</a>
+	<!-- END next_top -->
+</div>
 <!-- BEGIN list_item -->
 <a onclick="Panopto.playVideo('{SID}');">
 	<div class="box" id="box_{SID}">
@@ -15,13 +24,22 @@
 		</div>
 		<div class="xpan_video_infos">
 			<h2>{TITLE}</h2>
-			<p>{DESCRIPTION}</p>
 			<p><i>{LABEL_AUTHOR}</i> {AUTHOR}</p>
 			<p><i>{LABEL_CREATED_AT}</i> {CREATED_AT}</p>
 			<p><i>{LABEL_WATCHED}</i> {WATCHED}</p>
+			<div class="xpan_description"><p>{DESCRIPTION}</p></div>
 		</div>
 	</div>
 </a>
 <!-- END list_item -->
-<a class="xpan_previous_button" href="{LINK_PREVIOUS}">{LABEL_PREVIOUS}</a>
-<a class="xpan_next_button" href="{LINK_NEXT}">{LABEL_NEXT}</a>
+<div class="xpan_pagination_container">
+	<!-- BEGIN previous_bottom -->
+	<a class="xpan_previous_button xpan_pagination" href="{LINK_PREVIOUS}">&laquo;</a>
+	<!-- END previous_bottom -->
+	<!-- BEGIN page_bottom -->
+	<a class="xpan_page xpan_pagination {ADDITIONAL_CLASS}" href="{LINK_PAGE}">{LABEL_PAGE}</a>
+	<!-- END page_bottom -->
+	<!-- BEGIN next_bottom -->
+	<a class="xpan_next_button xpan_pagination" href="{LINK_NEXT}">&raquo;</a>
+	<!-- END next_bottom -->
+</div>

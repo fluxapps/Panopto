@@ -289,9 +289,7 @@ class xpanClient {
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id) {
-
-        $page = 0;  // TODO: implement pagination
+    public function getSessionsOfFolder($folder_id, $page = 0) {
         $perpage = 10;
         $pagination = new \Panopto\RemoteRecorderManagement\Pagination();
         $pagination->setPageNumber($page);
@@ -325,12 +323,12 @@ class xpanClient {
             throw $e;
         }
 
-        $sessions = $sessions_result->getGetSessionsListResult()->getResults()->getSession();
+        $sessions = $sessions_result->getGetSessionsListResult();
 
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
-        $this->log->write('Received ' . (int) count($sessions) . ' object(s).');
+        $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
 
-        return $sessions;
+        return array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
     }
 
     /**

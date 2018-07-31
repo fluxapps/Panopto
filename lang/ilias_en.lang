@@ -18,3 +18,5 @@ msg_no_videos#:#There are no videos yet.
 tab_videos#:#Videos
 xpan_new#:#New Video Object
 xpan_add#:#Create
+previous#:#<< Previous
+next#:#Next >>
