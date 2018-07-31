@@ -97,7 +97,7 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
 
 
         // Buttons
-        $this->addCommandButton(ilViMPConfigGUI::CMD_UPDATE,$this->lng->txt('save'));
+        $this->addCommandButton(ilPanoptoConfigGUI::CMD_UPDATE,$this->lng->txt('save'));
     }
 
     /**
