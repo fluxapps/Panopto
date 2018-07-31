@@ -35,8 +35,13 @@ class ilPanoptoPlugin extends ilRepositoryObjectPlugin {
         return self::PLUGIN_NAME;
     }
 
+    /**
+     * 
+     */
     protected function uninstallCustom() {
-        // TODO: Implement uninstallCustom() method.
+        global $DIC;
+        $DIC->database()->dropTable(xpanConfig::DB_TABLE_NAME);
+        $DIC->database()->dropTable(xpanSettings::DB_TABLE_NAME);
     }
 
 
