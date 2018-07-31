@@ -7,13 +7,13 @@
  */
 class xpanSettings extends ACtiveRecord {
 
-    const DB_TABLE = 'xpan_settings';
+    const DB_TABLE_NAME = 'xpan_settings';
 
     /**
      * @return string
      */
     public function getConnectorContainerName() {
-        return self::DB_TABLE;
+        return self::DB_TABLE_NAME;
     }
 
     /**

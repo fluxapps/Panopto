@@ -1,16 +1,12 @@
 var Panopto = {
 
-    video_urls: [],
-
-    signature: '',
+    base_url: '',
 
     playVideo: function (sid) {
         console.log('playVideo ' + sid);
-        // $('#xpan_waiter_modal').show();
         var $modal = $('#xpan_modal_player');
         $modal.modal('show');
-        // TODO: generic src from config
-        var $iframe = '<iframe src="https://fh-muenster.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=' + sid + '" width="720" height="405" style="padding: 0px; border: 1px solid #464646;" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
+        var $iframe = '<iframe src="' + Panopto.base_url + '/Panopto/Pages/Embed.aspx?id=' + sid + '" width="720" height="405" style="padding: 0px; border: 1px solid #464646;" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
         $modal.find('div#xpan_video_container').html($iframe);
         // $modal.find('h4.modal-title').html('test_title'); // TODO: set modal title
         $('#xoct_waiter_modal').show();

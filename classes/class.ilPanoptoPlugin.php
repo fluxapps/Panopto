@@ -36,7 +36,7 @@ class ilPanoptoPlugin extends ilRepositoryObjectPlugin {
     }
 
     /**
-     * 
+     *
      */
     protected function uninstallCustom() {
         global $DIC;

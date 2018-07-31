@@ -166,7 +166,7 @@ class xpanClient {
         $params = new \Panopto\UserManagement\CreateUser(
             $this->auth,
             $user,
-            'test123'   //TODO: create password
+            ''   //TODO: create password
         );
 
         /** @var \Panopto\UserManagement\UserManagement $user_management */

@@ -61,11 +61,11 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
         $input->setRequired(true);
         $this->addItem($input);
 
-        // API Password
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_API_PASSWORD), xpanConfig::F_API_PASSWORD);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_API_PASSWORD . '_info'));
-        $input->setRequired(true);
-        $this->addItem($input);
+//        // API Password
+//        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_API_PASSWORD), xpanConfig::F_API_PASSWORD);
+//        $input->setInfo($this->parent_gui->txt(xpanConfig::F_API_PASSWORD . '_info'));
+//        $input->setRequired(true);
+//        $this->addItem($input);
 
         // hostname
         $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_HOSTNAME), xpanConfig::F_HOSTNAME);
