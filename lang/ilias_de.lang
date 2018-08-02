@@ -15,6 +15,7 @@ conf_user_id_info#:#Bestimmt, welches Benutzerfeld an Panopto als Benutzername g
 conf_login#:#Benutzername
 conf_external_account#:#Externer Account
 msg_no_videos#:#Diesem Objekt wurden bisher keine Videos hinzugefügt.
+msg_success#:#Änderungen erfolgreich gespeichert.
 tab_videos#:#Videos
 xpan_new#:#Neues Video-Objekt
 xpan_add#:#Erstellen

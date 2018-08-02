@@ -35,6 +35,8 @@ Now, to create an api user:
 * Uncheck the checkbox "Create a personal folder for each user" (except if you want a personal folder for the api user for some reason)
 * Click "Preview" and on the next Screen "Create Users"
 
+After the user is created, open the user details by clicking on the user's name. Check the role "Administrator" under "Info" -> "System Roles" and click "Update Roles".
+
 ##### ILIAS
 Now, login to your ILIAS instance as an administrator. Navigate to "Administration" -> "Plugins" and look for the "Panopto" plugin. Install/Update the plugin if it's not up-to-date yet and afterwards choose "Configure". Configure the plugin as followed:
 * **Object Title**: choose how this object type should be named in ILIAS (displayed e.g. when creating a new object in the repository)
