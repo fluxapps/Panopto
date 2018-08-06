@@ -53,7 +53,7 @@ class xpanContentGUI extends xpanGUI {
         }
 
         $tpl = new ilTemplate('tpl.content_list.html', true, true, $this->pl->getDirectory());
-        $pages = 1 + floor($sessions['count'] % 10);
+        $pages = 1 + floor($sessions['count'] / 10);
 
         // "previous" button
         if ($_GET['xpan_page']) {
@@ -70,25 +70,27 @@ class xpanContentGUI extends xpanGUI {
         }
 
         // pages
-        for ($i = 1; $i < $pages; $i++) {
-            $this->ctrl->setParameter($this, 'xpan_page', $i - 1);
-            $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
-            // top
-            $tpl->setCurrentBlock('page_top');
-            $tpl->setVariable('LINK_PAGE', $link);
-            if (($i-1) == $_GET['xpan_page']) {
-                $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
+        if ($pages > 1) {
+            for ($i = 1; $i <= $pages; $i++) {
+                $this->ctrl->setParameter($this, 'xpan_page', $i - 1);
+                $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
+                // top
+                $tpl->setCurrentBlock('page_top');
+                $tpl->setVariable('LINK_PAGE', $link);
+                if (($i-1) == $_GET['xpan_page']) {
+                    $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
+                }
+                $tpl->setVariable('LABEL_PAGE', $i);
+                $tpl->parseCurrentBlock();
+                // bottom
+                $tpl->setCurrentBlock('page_bottom');
+                $tpl->setVariable('LINK_PAGE', $link);
+                if (($i-1) == $_GET['xpan_page']) {
+                    $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
+                }
+                $tpl->setVariable('LABEL_PAGE', $i);
+                $tpl->parseCurrentBlock();
             }
-            $tpl->setVariable('LABEL_PAGE', $i);
-            $tpl->parseCurrentBlock();
-            // bottom
-            $tpl->setCurrentBlock('page_bottom');
-            $tpl->setVariable('LINK_PAGE', $link);
-            if (($i-1) == $_GET['xpan_page']) {
-                $tpl->setVariable('ADDITIONAL_CLASS', 'xpan_page_active');
-            }
-            $tpl->setVariable('LABEL_PAGE', $i);
-            $tpl->parseCurrentBlock();
         }
 
         // "next" button
