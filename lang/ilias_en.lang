@@ -21,3 +21,16 @@ xpan_new#:#New Video Object
 xpan_add#:#Create
 previous#:#<< Previous
 next#:#Next >>
+xpan_new#:#Create new Panopto object
+xpan_add#:#Create
+cat_create_xpan#:#Create Panopto
+crs_create_xpan#:#Create Panopto
+fold_create_xpan#:#Create Panopto
+grp_create_xpan#:#Create Panopto
+root_create_xpan#:#Create Panopto
+xpan_visible#:#Visible: Panopto is visible
+xpan_read#:#Read: User can watch the videos
+xpan_rep_robj_xpan_perm_upload#:#Upload: User can upload videos
+xpan_write#:#Edit Settings: User can edit content and settings of Panopto object
+xpan_delete#:#Delete: User can delete Panopto object
+xpan_edit_permission#:#Change Permissions: User can change permission settings

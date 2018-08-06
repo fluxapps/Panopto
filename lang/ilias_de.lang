@@ -21,3 +21,15 @@ xpan_new#:#Neues Video-Objekt
 xpan_add#:#Erstellen
 previous#:#<< Zurück
 next#:#Nächste >>
+xpan_new#:#Neues Panopto-Objekt anlegen
+xpan_add#:#Erstellen
+cat_create_xpan#:#Panopto Erstellen
+crs_create_xpan#:#Panopto Erstellen
+fold_create_xpan#:#Panopto Erstellen
+grp_create_xpan#:#Panopto Erstellen
+root_create_xpan#:#Panopto Erstellen
+xpan_visible#:#Anzeigen: Panopto ist sichtbar
+xpan_read#:#Lesezugriff: Videos können angezeigt werden
+xpan_write#:#Einstellungen bearbeiten: Einstellungen und Inhalte können bearbeitet werden
+xpan_delete#:#Löschen: Objekt kann gelöscht werden
+xpan_edit_permission#:#Rechteeinstellungen ändern: Rechteeinstellungen ändern
