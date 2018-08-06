@@ -36,4 +36,45 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
     function initType() {
         return ilPanoptoPlugin::XPAN;
     }
+
+    /**
+     * get all alert properties
+     *
+     * @return array
+     */
+    public function getAlertProperties() {
+        $alert = array();
+        foreach ((array)$this->getCustomProperties(array()) as $prop) {
+            if ($prop['alert'] == true) {
+                $alert[] = $prop;
+            }
+        }
+
+        return $alert;
+    }
+
+    /**
+     * Get item properties
+     *
+     * @return    array        array of property arrays:
+     *                        'alert' (boolean) => display as an alert property (usually in red)
+     *                        'property' (string) => property name
+     *                        'value' (string) => property value
+     */
+    public function getCustomProperties($a_prop) {
+        $props = parent::getCustomProperties(array());
+
+        $settings = xpanSettings::find($this->obj_id);
+        if (!$settings->getIsOnline()) {
+            $props[] = array(
+                'alert' => true,
+                'newline' => true,
+                'property' => 'Status',
+                'value' => 'Offline',
+                'propertyNameVisible' => true
+            );
+        }
+
+        return $props;
+    }
 }
