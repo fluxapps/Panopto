@@ -33,9 +33,15 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
         return $commands;
     }
 
+    /**
+     * @return string
+     */
     function initType() {
+        $this->setType(ilPanoptoPlugin::XPAN);
         return ilPanoptoPlugin::XPAN;
     }
+
+
 
     /**
      * get all alert properties
