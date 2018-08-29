@@ -12,6 +12,9 @@ $servername = xpanUtil::getServerName();
 $application_key = xpanUtil::getApplicationKey();
 $instance_name = xpanUtil::getInstanceName();
 $user_key = xpanUtil::getUserKey();
+xpanLog::getInstance()->write('*********');
+xpanLog::getInstance()->write('Bounce Page Called for user ' . $user_key);
+xpanLog::getInstance()->write('*********');
 
 $request_auth_payload = 'serverName=' . $servername . '&expiration=' . $expiration;
 $valid_authcode = xpanUtil::validateAuthCode($request_auth_payload, $request_authcode);
