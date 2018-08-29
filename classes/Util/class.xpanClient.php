@@ -495,7 +495,7 @@ class xpanClient {
         foreach ($user_groups_details as $user_group_details) {
             $folder_ids = $user_group_details->getFoldersWithViewerAccess()->getGuid();
             if (is_array($folder_ids)) {
-                $folders_with_viewer_access = array_merge($folders_with_creator_access, $folder_ids);
+                $folders_with_viewer_access = array_merge($folders_with_viewer_access, $folder_ids);
             }
         }
         $folder_ids = $user_details->getFoldersWithViewerAccess()->getGuid();
