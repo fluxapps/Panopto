@@ -154,12 +154,56 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
 
             // exception: object title is stored in lng_data, not in config table
             if ($key == xpanConfig::F_OBJECT_TITLE) {
-                $this->db->update('lng_data',array(
-                    'value' => array('text', $value)
-                ), array(
-                    'module' => array('text', 'rep_robj_xpan'),
-                    'identifier' => array('text', 'rep_robj_xpan_obj_xpan'),
-                ));
+	            $sql = $this->db->query('select value from lng_data where module = "rep_robj_xpan" and identifier = "rep_robj_xpan_obj_xpan"');
+	            $existing = $this->db->fetchObject($sql);
+
+	            if ($existing) {
+		            $this->db->update('lng_data',array(
+			            'value' => array('text', $value)
+		            ), array(
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_obj_xpan'),
+		            ));
+	            } else {
+		            $this->db->insert('lng_data',array(
+			            'lang_key' => array('text', 'de'),
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_obj_xpan'),
+			            'value' => array('text', $value)
+		            ));
+		            $this->db->insert('lng_data',array(
+			            'lang_key' => array('text', 'en'),
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_obj_xpan'),
+			            'value' => array('text', $value)
+		            ));
+	            }
+
+	            $sql = $this->db->query('select value from lng_data where module = "rep_robj_xpan" and identifier = "rep_robj_xpan_objs_xpan"');
+	            $existing = $this->db->fetchObject($sql);
+
+	            if ($existing) {
+		            $this->db->update('lng_data',array(
+			            'value' => array('text', $value)
+		            ), array(
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_objs_xpan'),
+		            ));
+	            } else {
+		            $this->db->insert('lng_data',array(
+			            'lang_key' => array('text', 'de'),
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_objs_xpan'),
+			            'value' => array('text', $value)
+		            ));
+		            $this->db->insert('lng_data',array(
+			            'lang_key' => array('text', 'en'),
+			            'module' => array('text', 'rep_robj_xpan'),
+			            'identifier' => array('text', 'rep_robj_xpan_objs_xpan'),
+			            'value' => array('text', $value)
+		            ));
+	            }
+
                 return;
             }
 
