@@ -7,47 +7,100 @@
  */
 class xpanUtil {
 
-    public static function getServerName() {
+	/**
+	 * @return mixed
+	 */
+	public static function getServerName() {
         return xpanConfig::getConfig(xpanConfig::F_HOSTNAME);
     }
 
-    public static function getApplicationKey() {
+
+	/**
+	 * @return mixed
+	 */
+	public static function getApplicationKey() {
         return xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY);
     }
 
-    public static function getInstanceName() {
+
+	/**
+	 * @return mixed
+	 */
+	public static function getInstanceName() {
         return xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME);
     }
 
-    public static function getUserIdentifier($user_id = 0) {
+
+	/**
+	 * @param int $user_id
+	 *
+	 * @return mixed
+	 */
+	public static function getUserIdentifier($user_id = 0) {
         global $DIC;
         $user = $user_id ? new ilObjUser($user_id) : $DIC->user();
         return (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $user->getLogin() : $user->getExternalAccount();
     }
 
-    public static function getUserKey($user_id = 0) {
+
+	/**
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	public static function getUserKey($user_id = 0) {
         return self::getInstanceName() . '\\' . self::getUserIdentifier($user_id);
     }
 
-    public static function getApiUserKey() {
+
+	/**
+	 * @return string
+	 */
+	public static function getApiUserKey() {
         return xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME) . "\\" . xpanConfig::getConfig(xpanConfig::F_API_USER);
     }
 
-    public static function generateAuthCode($payload) {
+
+	/**
+	 * @param $payload
+	 *
+	 * @return string
+	 */
+	public static function generateAuthCode($payload) {
         $signedpayload = $payload . "|" . self::getApplicationKey();
         return strtoupper(sha1($signedpayload));
     }
 
-    public static function validateAuthCode($payload, $auth_code) {
+
+	/**
+	 * @param $payload
+	 * @param $auth_code
+	 *
+	 * @return bool
+	 */
+	public static function validateAuthCode($payload, $auth_code) {
         return (self::generateAuthCode($payload) == $auth_code);
     }
 
-    public static function getExternalIdOfObject(ilObjPanopto $object, $ref_id = 0) {
+
+	/**
+	 * @param ilObjPanopto $object
+	 * @param int          $ref_id
+	 *
+	 * @return string
+	 */
+	public static function getExternalIdOfObject(ilObjPanopto $object, $ref_id = 0) {
         $ref_id = $ref_id ? $ref_id : $_GET['ref_id'];
         return $object->getTitle() . ' (ID: ' . $ref_id . ')';
     }
 
-    public static function getExternalIdOfObjectById($ref_id = 0) {
+
+	/**
+	 * @param int $ref_id
+	 *
+	 * @return string
+	 */
+	public static function getExternalIdOfObjectById($ref_id = 0) {
         $ref_id = $ref_id ? $ref_id : $_GET['ref_id'];
         return ilObjPanopto::_lookupTitle(ilObjPanopto::_lookupObjId($_GET['ref_id'])) . ' (ID: ' . $ref_id . ')';
     }

@@ -1,5 +1,29 @@
 <?php
 
+use Panopto\AccessManagement\AccessManagement;
+use \Panopto\AccessManagement\AccessRole;
+use Panopto\AccessManagement\FolderAccessDetails;
+use Panopto\AccessManagement\GetFolderAccessDetails;
+use Panopto\AccessManagement\GetSessionAccessDetails;
+use Panopto\AccessManagement\GetUserAccessDetails;
+use Panopto\AccessManagement\GrantUsersAccessToFolder;
+use Panopto\AccessManagement\GrantUsersViewerAccessToSession;
+use Panopto\AccessManagement\UserAccessDetails;
+use Panopto\Client as PanoptoClient;
+use Panopto\RemoteRecorderManagement\Pagination;
+use Panopto\SessionManagement\ArrayOfSessionState;
+use Panopto\SessionManagement\Folder;
+use Panopto\SessionManagement\GetAllFoldersByExternalId;
+use Panopto\SessionManagement\GetSessionsList;
+use Panopto\SessionManagement\ListSessionsRequest;
+use Panopto\SessionManagement\SessionManagement;
+use Panopto\SessionManagement\SessionState;
+use Panopto\UserManagement\CreateUser;
+use Panopto\UserManagement\GetUserByKey;
+use Panopto\UserManagement\SyncExternalUser;
+use Panopto\UserManagement\User;
+use Panopto\UserManagement\UserManagement;
+
 /**
  * Class xpanClient
  *
@@ -7,10 +31,10 @@
  */
 class xpanClient {
 
-    const ROLE_VIEWER = \Panopto\AccessManagement\AccessRole::Viewer;
-    const ROLE_VIEWER_WITH_LINK = \Panopto\AccessManagement\AccessRole::ViewerWithLink;
-    const ROLE_CREATOR = \Panopto\AccessManagement\AccessRole::Creator;
-    const ROLE_PUBLISHER = \Panopto\AccessManagement\AccessRole::Publisher;
+	const ROLE_VIEWER = AccessRole::Viewer;
+	const ROLE_VIEWER_WITH_LINK = AccessRole::ViewerWithLink;
+	const ROLE_CREATOR = AccessRole::Creator;
+	const ROLE_PUBLISHER = AccessRole::Publisher;
 
     /**
      * @var xpanClient
@@ -31,7 +55,7 @@ class xpanClient {
 
 
     /**
-     * @var \Panopto\Client
+     * @var Client
      */
     protected $panoptoclient;
     /**
@@ -50,14 +74,13 @@ class xpanClient {
         $this->log = xpanLog::getInstance();
 
         $arrContextOptions=array("ssl"=>array( "verify_peer"=>false, "verify_peer_name"=>false));
-        $this->panoptoclient = new \Panopto\Client(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
-//        $panoptoclient->setAuthenticationInfo(xpanConfig::getConfig(xpanConfig::F_API_USER), xpanConfig::getConfig(xpanConfig::F_API_PASSWORD));
+        $this->panoptoclient = new PanoptoClient(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
         $this->panoptoclient->setAuthenticationInfo(xpanUtil::getApiUserKey(), '', xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY));
         $this->auth = $this->panoptoclient->getAuthenticationInfo();
     }
 
     /**
-     * @return \Panopto\SessionManagement\Folder[]
+     * @return Folder[]
      * @throws Exception
      */
     public function getAllFoldersByExternalId(array $ext_ids) {
@@ -68,13 +91,13 @@ class xpanClient {
         $this->log->write("providerNames:");
         $this->log->write(print_r(array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME)), true));
 
-        $params = new \Panopto\SessionManagement\GetAllFoldersByExternalId(
+        $params = new GetAllFoldersByExternalId(
             $this->auth,
             $ext_ids,
             array(xpanConfig::getConfig(xpanConfig::F_INSTANCE_NAME))
         );
 
-        /** @var \Panopto\SessionManagement\SessionManagement $session_client */
+        /** @var SessionManagement $session_client */
         $session_client = $this->panoptoclient->SessionManagement();
         try {
             $return = $session_client->GetAllFoldersByExternalId($params)->getGetAllFoldersByExternalIdResult()->getFolder();
@@ -90,7 +113,7 @@ class xpanClient {
 
     /**
      * @param $ext_id
-     * @return \Panopto\SessionManagement\Folder
+     * @return Folder
      * @throws Exception
      */
     public function getFolderByExternalId($ext_id) {
@@ -99,7 +122,7 @@ class xpanClient {
 
     /**
      * @param string $user_key
-     * @return \Panopto\UserManagement\User
+     * @return User
      * @throws Exception
      */
     public function getUserByKey($user_key = '') {
@@ -110,10 +133,10 @@ class xpanClient {
         $this->log->write("userKey:");
         $this->log->write(print_r($user_key, true));
 
-        /** @var \Panopto\UserManagement\UserManagement $user_management */
+        /** @var UserManagement $user_management */
         $user_management = $this->panoptoclient->UserManagement();
 
-        $params = new \Panopto\UserManagement\GetUserByKey(
+        $params = new GetUserByKey(
             $this->auth,
             $user_key
         );
@@ -157,19 +180,19 @@ class xpanClient {
         $this->log->write("userKey:");
         $this->log->write(print_r($user_key, true));
 
-        $user = new \Panopto\UserManagement\User();
+        $user = new User();
         $user->setFirstName($DIC->user()->getFirstname());
         $user->setLastName($DIC->user()->getLastname());
         $user->setEmail($DIC->user()->getEmail());
         $user->setUserKey($user_key);
 
-        $params = new \Panopto\UserManagement\CreateUser(
+        $params = new CreateUser(
             $this->auth,
             $user,
             ''
         );
 
-        /** @var \Panopto\UserManagement\UserManagement $user_management */
+        /** @var UserManagement $user_management */
         $user_management = $this->panoptoclient->UserManagement();
         try {
             $user_management->CreateUser($params);
@@ -203,14 +226,14 @@ class xpanClient {
         $this->log->write(print_r($guids, true));
         $this->log->write("role:");
         $this->log->write(print_r($role, true));
-        $params = new \Panopto\AccessManagement\GrantUsersAccessToFolder(
+        $params = new GrantUsersAccessToFolder(
             $this->auth,
             $folder_id,
             $guids,
             $role
         );
 
-        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+        /** @var AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
         try {
             $access_management->GrantUsersAccessToFolder($params);
@@ -254,13 +277,13 @@ class xpanClient {
         $this->log->write("userIds:");
         $this->log->write(print_r($guids, true));
 
-        $params = new \Panopto\AccessManagement\GrantUsersViewerAccessToSession(
+        $params = new GrantUsersViewerAccessToSession(
             $this->auth,
             $session_id,
             $guids
         );
 
-        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+        /** @var AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
         try {
             $access_management->GrantUsersViewerAccessToSession($params);
@@ -291,16 +314,16 @@ class xpanClient {
      */
     public function getSessionsOfFolder($folder_id, $page = 0) {
         $perpage = 10;
-        $pagination = new \Panopto\RemoteRecorderManagement\Pagination();
+        $pagination = new Pagination();
         $pagination->setPageNumber($page);
         $pagination->setMaxNumberResults($perpage);
 
-        $request = new \Panopto\SessionManagement\ListSessionsRequest();
+        $request = new ListSessionsRequest();
         $request->setPagination($pagination);
         $request->setFolderId($folder_id);
 
-        $states = new \Panopto\SessionManagement\ArrayOfSessionState();
-        $states->setSessionState(array(\Panopto\SessionManagement\SessionState::Complete));
+        $states = new ArrayOfSessionState();
+        $states->setSessionState(array( SessionState::Complete));
         $request->setStates($states);
 
         $this->log->write('*********');
@@ -308,13 +331,13 @@ class xpanClient {
         $this->log->write("request:");
         $this->log->write(print_r($request, true));
 
-        $params = new \Panopto\SessionManagement\GetSessionsList(
+        $params = new GetSessionsList(
             $this->auth,
             $request,
             ''
         );
 
-        /** @var \Panopto\SessionManagement\SessionManagement $session_client */
+        /** @var SessionManagement $session_client */
         $session_client = $this->panoptoclient->SessionManagement();
         try {
             $sessions_result = $session_client->GetSessionsList($params);
@@ -333,7 +356,7 @@ class xpanClient {
 
     /**
      * @param $folder_id
-     * @return \Panopto\AccessManagement\FolderAccessDetails
+     * @return FolderAccessDetails
      * @throws Exception
      */
     public function getFolderAccessDetails($folder_id) {
@@ -342,12 +365,12 @@ class xpanClient {
         $this->log->write("folderId:");
         $this->log->write(print_r($folder_id, true));
 
-        $params = new \Panopto\AccessManagement\GetFolderAccessDetails(
+        $params = new GetFolderAccessDetails(
             $this->auth,
             $folder_id
         );
 
-        /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+        /** @var AccessManagement $access_management */
         $access_management = $this->panoptoclient->AccessManagement();
         try {
             $return = $access_management->GetFolderAccessDetails($params)->getGetFolderAccessDetailsResult();
@@ -364,7 +387,7 @@ class xpanClient {
 
     /**
      * @param $user_id
-     * @return \Panopto\AccessManagement\UserAccessDetails
+     * @return UserAccessDetails
      * @throws Exception
      */
     public function getUserAccessDetails($user_id = 0) {
@@ -376,12 +399,12 @@ class xpanClient {
             $this->log->write("userId:");
             $this->log->write(print_r($guid, true));
 
-            $params = new \Panopto\AccessManagement\GetUserAccessDetails(
+            $params = new GetUserAccessDetails(
                 $this->auth,
                 $guid
             );
 
-            /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+            /** @var AccessManagement $access_management */
             $access_management = $this->panoptoclient->AccessManagement();
             try {
                 $user_access_details[$user_id] = $access_management->GetUserAccessDetails($params)->getGetUserAccessDetailsResult();
@@ -410,12 +433,12 @@ class xpanClient {
             $this->log->write("sessionId:");
             $this->log->write(print_r($session_id, true));
 
-            $params = new \Panopto\AccessManagement\GetSessionAccessDetails(
+            $params = new GetSessionAccessDetails(
                 $this->auth,
                 $session_id
             );
 
-            /** @var \Panopto\AccessManagement\AccessManagement $access_management */
+            /** @var AccessManagement $access_management */
             $access_management = $this->panoptoclient->AccessManagement();
             try {
                 $session_access_details[$session_id] = $access_management->GetSessionAccessDetails($params)->getGetSessionAccessDetailsResult();
@@ -442,7 +465,7 @@ class xpanClient {
 
         $user = new ilObjUser($user_id);
 
-        $params = new \Panopto\UserManagement\SyncExternalUser(
+        $params = new SyncExternalUser(
             $this->auth,
             $user->getFirstname(),
             $user->getLastname(),
@@ -451,7 +474,7 @@ class xpanClient {
             array()
         );
 
-        /** @var \Panopto\UserManagement\UserManagement $user_management */
+        /** @var UserManagement $user_management */
         $user_management = $this->panoptoclient->UserManagement();
         try {
             $user_management->SyncExternalUser($params);
