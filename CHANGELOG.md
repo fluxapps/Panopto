@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0]
+* Support for ILIAS 5.4
+* Dropped support for ILIAS 5.2
+
 ## [1.0.1]
 * Bugfix: Config "Object Title" can not be saved
 
