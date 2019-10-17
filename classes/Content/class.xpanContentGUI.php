@@ -161,6 +161,8 @@ class xpanContentGUI extends xpanGUI {
 
 
     /**
+     * Add sub tabs and activate the forwarded sub tab in the parameter.
+     *
      * @param string $active_sub_tab
      */
     protected function addSubTabs($active_sub_tab)
@@ -170,11 +172,13 @@ class xpanContentGUI extends xpanGUI {
             $this->pl->txt('content_show'),
             $DIC->ctrl()->getLinkTarget($this, self::CMD_SHOW)
         );
-        //$DIC->access()->checkAccess()
-        $DIC->tabs()->addSubTab(self::TAB_SUB_SORTING,
-            $this->pl->txt('content_sorting'),
-            $DIC->ctrl()->getLinkTarget($this, self::CMD_SORTING)
-        );
+
+        if ($DIC->access()->checkAccess("write", "", $this->parent_gui->ref_id)) {
+            $DIC->tabs()->addSubTab(self::TAB_SUB_SORTING,
+                $this->pl->txt('content_sorting'),
+                $DIC->ctrl()->getLinkTarget($this, self::CMD_SORTING)
+            );
+        }
 
         $DIC->tabs()->activateSubTab($active_sub_tab);
     }
