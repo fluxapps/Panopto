@@ -9,6 +9,11 @@
  */
 class xpanContentGUI extends xpanGUI {
 
+    const CMD_SHOW = "index";
+    const CMD_SORTING = "sorting";
+    const TAB_SUB_SHOW = "subShow";
+    const TAB_SUB_SORTING = "subSorting";
+
     /**
      * @var xpanClient
      */
@@ -45,6 +50,7 @@ class xpanContentGUI extends xpanGUI {
      * @throws Exception
      */
     protected function index() {
+        $this->addSubTabs(self::TAB_SUB_SHOW);
         $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
 
         if (!$sessions['count']) {
@@ -125,6 +131,12 @@ class xpanContentGUI extends xpanGUI {
     }
 
 
+    protected function sorting()
+    {
+        $this->addSubTabs(self::TAB_SUB_SORTING);
+    }
+
+
     /**
      * @param $duration_in_seconds
      * @return string
@@ -145,5 +157,25 @@ class xpanContentGUI extends xpanGUI {
 //		$modal->setHeading('<div id="xoct_waiter_modal" class="xoct_waiter xoct_waiter_mini"></div>');
         $modal->setBody('<section><div id="xpan_video_container"></div></section>');
         return $modal->getHTML();
+    }
+
+
+    /**
+     * @param string $active_sub_tab
+     */
+    protected function addSubTabs($active_sub_tab)
+    {
+        global $DIC;
+        $DIC->tabs()->addSubTab(self::TAB_SUB_SHOW,
+            $this->pl->txt('content_show'),
+            $DIC->ctrl()->getLinkTarget($this, self::CMD_SHOW)
+        );
+        //$DIC->access()->checkAccess()
+        $DIC->tabs()->addSubTab(self::TAB_SUB_SORTING,
+            $this->pl->txt('content_sorting'),
+            $DIC->ctrl()->getLinkTarget($this, self::CMD_SORTING)
+        );
+
+        $DIC->tabs()->activateSubTab($active_sub_tab);
     }
 }

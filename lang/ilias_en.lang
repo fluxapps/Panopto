@@ -34,3 +34,5 @@ xpan_rep_robj_xpan_perm_upload#:#Upload: User can upload videos
 xpan_write#:#Edit Settings: User can edit content and settings of Panopto object
 xpan_delete#:#Delete: User can delete Panopto object
 xpan_edit_permission#:#Change Permissions: User can change permission settings
+content_show#:#Show
+content_sorting#:#Sorting
