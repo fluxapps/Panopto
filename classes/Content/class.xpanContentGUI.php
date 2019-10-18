@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../../vendor/autoload.php";
 
 /**
  * Class xpanContentGUI
@@ -134,6 +135,10 @@ class xpanContentGUI extends xpanGUI {
     protected function sorting()
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
+
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
+        $this->tpl->setContent($sort_table_gui->getHTML());
     }
 
 
@@ -168,6 +173,7 @@ class xpanContentGUI extends xpanGUI {
     protected function addSubTabs($active_sub_tab)
     {
         global $DIC;
+
         $DIC->tabs()->addSubTab(self::TAB_SUB_SHOW,
             $this->pl->txt('content_show'),
             $DIC->ctrl()->getLinkTarget($this, self::CMD_SHOW)
@@ -182,4 +188,30 @@ class xpanContentGUI extends xpanGUI {
 
         $DIC->tabs()->activateSubTab($active_sub_tab);
     }
+
+
+    /**
+     * ajax
+     */
+    public function reorder()
+    {
+        die("OK!");
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
+        foreach ($sessions["sessions"] as $session) {
+            $session->setName("LOOOOL");
+        }
+        /*
+        $ids = $_POST['ids'];
+        $sort = 10;
+        foreach ($ids as $id) {
+            $xvmpSelectedMedia = xvmpSelectedMedia::where(array('mid' => $id, 'obj_id' => $this->getObjId()))->first();
+            $xvmpSelectedMedia->setSort($sort);
+            $xvmpSelectedMedia->update();
+            $sort += 10;
+        }
+        */
+        echo "{\"success\": true}";
+        exit;
+    }
+
 }
