@@ -52,7 +52,8 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
+        $plainSessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
+        $sessions = SorterEntry::generateSortedSessions($plainSessions);
 
         if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
@@ -195,21 +196,27 @@ class xpanContentGUI extends xpanGUI {
      */
     public function reorder()
     {
-        die("OK!");
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
-        foreach ($sessions["sessions"] as $session) {
-            $session->setName("LOOOOL");
-        }
-        /*
         $ids = $_POST['ids'];
-        $sort = 10;
-        foreach ($ids as $id) {
-            $xvmpSelectedMedia = xvmpSelectedMedia::where(array('mid' => $id, 'obj_id' => $this->getObjId()))->first();
-            $xvmpSelectedMedia->setSort($sort);
-            $xvmpSelectedMedia->update();
-            $sort += 10;
+        $precedence = 1;
+
+        $previousEntry = SorterEntry::where(array("ref_id" => $this->parent_gui->ref_id))->first();
+
+        // Delete previous entries
+        if (!is_null($previousEntry)) {
+            foreach (SorterEntry::get() as $entry) {
+                $entry->delete();
+            }
         }
-        */
+
+        foreach ($ids as $id) {
+            $entry = new SorterEntry();
+            $entry->setRefId($this->parent_gui->ref_id);
+            $entry->setPrecedence($precedence);
+            $entry->setSessionId($id);
+            $entry->create();
+            $precedence++;
+        }
+
         echo "{\"success\": true}";
         exit;
     }

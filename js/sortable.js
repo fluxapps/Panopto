@@ -13,18 +13,21 @@ PanoptoSorter = {
         //xoctWaiter.show();
         var order = [];
         $("div.ilTableOuter table tbody tr").each(function () {
-            order.push($(this).attr('id').substring(9));
+            order.push($(this).attr('id'));
         });
+        console.log(order);
 
-        alert(PanoptoSorter.base_link + '&cmd=reorder');
-        ajax_url = PanoptoSorter.base_link + '&cmd=reorder';
+        var ajax_url = PanoptoSorter.base_link + '&cmd=reorder';
         $.ajax({
             url: ajax_url,
             type: "POST",
             data: {
                 "ids": order
+            },
+            success: function (data) {
+                console.log(data)
             }
-        })
+        });
     },
 
     init: function (base_link) {

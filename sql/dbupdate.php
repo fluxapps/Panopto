@@ -4,6 +4,7 @@ require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/classes/Config/class.xpanConfig.php');
 xpanSettings::updateDB();
 xpanConfig::updateDB();
+SorterEntry::updateDB();
 ?>
 <#2>
 <?php
