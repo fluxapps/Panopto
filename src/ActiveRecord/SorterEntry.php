@@ -163,16 +163,16 @@ class SorterEntry extends ActiveRecord
             }
         }
 
-        // Compute array differences
-        foreach ($sorted["sessions"] as $sorted_session) {
-            foreach ($sessions["sessions"] as &$session) {
-                if ($sorted_session->getId() === $session->getId()) {
-                    unset($session);
-                    break;
-                }
+        $diff = array_udiff($sessions["sessions"], $sorted["sessions"],
+            function ($obj_a, $obj_b) {
+                return strcmp($obj_a->getId(), $obj_b->getId());
             }
+        );
+
+        foreach ($diff as $session) {
+            array_push($sorted["sessions"], $session);
         }
 
-        return $sessions;
+        return $sorted;
     }
 }

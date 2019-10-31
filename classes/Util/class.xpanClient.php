@@ -319,16 +319,9 @@ class xpanClient {
      */
     public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
     {
+        $perpage = 10;
         $request = new ListSessionsRequest();
         $request->setFolderId($folder_id);
-
-        if ($page_limit) {
-            $perpage = 10;
-            $pagination = new Pagination();
-            $pagination->setPageNumber($page);
-            $pagination->setMaxNumberResults($perpage);
-            $request->setPagination($pagination);
-        }
 
         $states = new ArrayOfSessionState();
         $states->setSessionState(array( SessionState::Complete));
@@ -360,8 +353,18 @@ class xpanClient {
         $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
 
         $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
+        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
 
-        return SorterEntry::generateSortedSessions($array_sessions);
+        if ($page_limit) {
+            // Implement manual pagination
+            return array(
+                "count"    => count($sorted_sessions["sessions"]),
+                "sessions" => array_slice($sorted_sessions["sessions"], $page * $perpage, $perpage),
+            );
+        } else {
+            return $sorted_sessions;
+        }
+
     }
 
     /**
