@@ -36,3 +36,6 @@ xpan_delete#:#Delete: User can delete Panopto object
 xpan_edit_permission#:#Change Permissions: User can change permission settings
 content_show#:#Show
 content_sorting#:#Sorting
+content_thumbnail#:#Thumbnail
+content_title#:#Title
+content_description#:#Description

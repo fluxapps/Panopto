@@ -32,7 +32,7 @@ class xpanSortingTableGUI extends ilTable2GUI
         parent::__construct($a_parent_obj);
         $plugin_dir = $pl->getDirectory();
 
-        $this->initColumns();
+        $this->initColumns($pl);
         $this->setRowTemplate(self::TBL_ROW_TEMPLATE_NAME, $plugin_dir);
         $this->setExternalSorting(true);
         $this->setExternalSegmentation(true);
@@ -43,12 +43,15 @@ class xpanSortingTableGUI extends ilTable2GUI
     }
 
 
-    protected function initColumns()
+    /**
+     * @param ilPanoptoPlugin $pl
+     */
+    protected function initColumns($pl)
     {
         $this->addColumn("", 'move_icon');
-        $this->addColumn("___THUMBNAIL", 'thumbnail');
-        $this->addColumn("___TITEL", 'title');
-        $this->addColumn("___BESCHREIBUNG", 'description');
+        $this->addColumn($pl->txt('content_thumbnail'), 'thumbnail');
+        $this->addColumn($pl->txt('content_title'), 'title');
+        $this->addColumn($pl->txt('content_description'), 'description');
     }
 
 
