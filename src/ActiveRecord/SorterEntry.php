@@ -148,7 +148,6 @@ class SorterEntry extends ActiveRecord
             "sessions" => [],
         ];
         $entries = SorterEntry::orderBy("precedence");
-        //die(var_dump($entries->get()));
 
         /* @var $entry SorterEntry */
         foreach ($entries->get() as $entry) {
@@ -164,17 +163,16 @@ class SorterEntry extends ActiveRecord
             }
         }
 
-        // Append sessions that haven't been sorted yet
-        $diff = array_udiff($sessions["sessions"], $sorted["sessions"],
-            function ($obj_a, $obj_b) {
-
-                return $obj_a->getId() - $obj_b->getId();
+        // Compute array differences
+        foreach ($sorted["sessions"] as $sorted_session) {
+            foreach ($sessions["sessions"] as &$session) {
+                if ($sorted_session->getId() === $session->getId()) {
+                    unset($session);
+                    break;
+                }
             }
-        );
-        foreach ($diff as $session) {
-            array_push($sorted["sessions"], $session);
         }
 
-        return $sorted;
+        return $sessions;
     }
 }

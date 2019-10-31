@@ -52,8 +52,7 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $plainSessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
-        $sessions = SorterEntry::generateSortedSessions($plainSessions);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, true, $_GET['xpan_page']);
 
         if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
@@ -137,8 +136,7 @@ class xpanContentGUI extends xpanGUI {
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
 
-        $plainSessions = $this->client->getSessionsOfFolder($this->folder_id);
-        $sessions = SorterEntry::generateSortedSessions($plainSessions);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
         $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
         $this->tpl->setContent($sort_table_gui->getHTML());
     }

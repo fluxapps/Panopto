@@ -49,9 +49,9 @@ class xpanSortingTableGUI extends ilTable2GUI
     protected function initColumns($pl)
     {
         $this->addColumn("", 'move_icon');
-        $this->addColumn($pl->txt('content_thumbnail'), 'thumbnail');
-        $this->addColumn($pl->txt('content_title'), 'title');
-        $this->addColumn($pl->txt('content_description'), 'description');
+        $this->addColumn($pl->txt('content_thumbnail'));
+        $this->addColumn($pl->txt('content_title'));
+        $this->addColumn($pl->txt('content_description'));
     }
 
 

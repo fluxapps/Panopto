@@ -308,19 +308,27 @@ class xpanClient {
         $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
     }
 
+
     /**
+     * @param      $folder_id
+     * @param bool $page_limit Only returns a specific page if true, otherwise everything
+     * @param int  $page
+     *
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page = 0) {
-        $perpage = 10;
-        $pagination = new Pagination();
-        $pagination->setPageNumber($page);
-        $pagination->setMaxNumberResults($perpage);
-
+    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
+    {
         $request = new ListSessionsRequest();
-        $request->setPagination($pagination);
         $request->setFolderId($folder_id);
+
+        if ($page_limit) {
+            $perpage = 10;
+            $pagination = new Pagination();
+            $pagination->setPageNumber($page);
+            $pagination->setMaxNumberResults($perpage);
+            $request->setPagination($pagination);
+        }
 
         $states = new ArrayOfSessionState();
         $states->setSessionState(array( SessionState::Complete));
@@ -351,7 +359,9 @@ class xpanClient {
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
         $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
 
-        return array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
+        $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
+
+        return SorterEntry::generateSortedSessions($array_sessions);
     }
 
     /**
