@@ -137,7 +137,8 @@ class xpanContentGUI extends xpanGUI {
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
 
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $plainSessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $sessions = SorterEntry::generateSortedSessions($plainSessions);
         $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
         $this->tpl->setContent($sort_table_gui->getHTML());
     }

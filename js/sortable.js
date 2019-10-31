@@ -15,7 +15,6 @@ PanoptoSorter = {
         $("div.ilTableOuter table tbody tr").each(function () {
             order.push($(this).attr('id'));
         });
-        console.log(order);
 
         var ajax_url = PanoptoSorter.base_link + '&cmd=reorder';
         $.ajax({
