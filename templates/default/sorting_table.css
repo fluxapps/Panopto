@@ -112,3 +112,7 @@ div#xvmp_show_videos_btn_parent {
 div#xvmp_show_videos_btn_child {
 	line-height: 100px;
 }
+
+.breakall {
+	word-break: break-all;
+}
