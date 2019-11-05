@@ -12,10 +12,12 @@ class xpanSortingTableGUI extends ilTable2GUI
     const TBL_ROW_TEMPLATE_DIR = "/templates/tbl_rows/";
     const JS_FILES_TO_EMBED
         = [
+            "/js/xoctWaiter.js",
             "/js/sortable.js",
         ];
     const CSS_FILES_TO_EMBED
         = [
+            "/templates/default/xoctWaiter.css",
             "/templates/default/sorting_table.css",
         ];
 
@@ -84,6 +86,7 @@ class xpanSortingTableGUI extends ilTable2GUI
 
         $base_link = $this->ctrl->getLinkTarget($this->parent_obj, '', '', true);
         $main_tpl->addOnLoadCode('PanoptoSorter.init("' . $base_link . '");');
+        $main_tpl->addOnLoadCode('xoctWaiter.init("waiter");');
     }
 
 

@@ -10,7 +10,7 @@ PanoptoSorter = {
     },
 
     reSort: function (e, ui) {
-        //xoctWaiter.show();
+        xoctWaiter.show();
         var order = [];
         $("div.ilTableOuter table tbody tr").each(function () {
             order.push($(this).attr('id'));
@@ -22,10 +22,9 @@ PanoptoSorter = {
             type: "POST",
             data: {
                 "ids": order
-            },
-            success: function (data) {
-                console.log(data)
             }
+        }).always(function (data, textStatus, jqXHR) {
+            xoctWaiter.hide();
         });
     },
 
@@ -34,7 +33,6 @@ PanoptoSorter = {
 
         $("div.ilTableOuter table tbody").sortable({
             helper: PanoptoSorter.fixHelper,
-            //items: '.xvmpSortable',
             stop: PanoptoSorter.reSort
         }).disableSelection();
     }
