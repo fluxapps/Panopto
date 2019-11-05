@@ -9,7 +9,7 @@ class xpanSortingTableGUI extends ilTable2GUI
 {
 
     const TBL_ROW_TEMPLATE_NAME = "tpl.sorting_row.html";
-    const TBL_ROW_TEMPLATE_DIR = "/templates/tbl_rows/";
+    const TBL_ROW_TEMPLATE_DIR = "/templates/table_rows/";
     const JS_FILES_TO_EMBED
         = [
             "/js/xoctWaiter.js",
@@ -35,7 +35,8 @@ class xpanSortingTableGUI extends ilTable2GUI
         $plugin_dir = $pl->getDirectory();
 
         $this->initColumns($pl);
-        $this->setRowTemplate(self::TBL_ROW_TEMPLATE_NAME, $plugin_dir);
+        $this->setRowTemplate($pl->getDirectory() . self::TBL_ROW_TEMPLATE_DIR . self::TBL_ROW_TEMPLATE_NAME, $plugin_dir);
+
         $this->setExternalSorting(true);
         $this->setExternalSegmentation(true);
         $this->setShowRowsSelector(true);
