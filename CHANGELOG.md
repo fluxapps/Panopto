@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.2.1]
+* Bugfix: Offline object still accessible
+
 ## [1.2.0]
 * Sorting functionality
 
