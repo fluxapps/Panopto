@@ -4,7 +4,6 @@ require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/classes/Config/class.xpanConfig.php');
 xpanSettings::updateDB();
 xpanConfig::updateDB();
-SorterEntry::updateDB();
 ?>
 <#2>
 <?php
@@ -39,4 +38,8 @@ if (!$query->numRows()) {
         'value' => array('text', 'Panopto Videos')
     ));
 }
+?>
+<#3>
+<?php
+SorterEntry::updateDB();
 ?>

@@ -350,7 +350,7 @@ class xpanClient {
         $sessions = $sessions_result->getGetSessionsListResult();
 
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
-        $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
+        $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
         $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
         $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
