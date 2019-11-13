@@ -428,7 +428,7 @@ class xpanClient {
 
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($user_access_details[$user_id]) . ' object(s).');
+            $this->log->write('Received ' . (is_array($user_access_details[$user_id]) ? (int) count($user_access_details[$user_id]) : 0) . ' object(s).');
         }
         return $user_access_details[$user_id];
     }
@@ -461,7 +461,10 @@ class xpanClient {
             }
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($session_access_details[$session_id]) . ' object(s).');
+            $this->log->write('Received ' .
+                (is_array($session_access_details[$session_id]) ? (int) count($session_access_details[$session_id]) : 0 ) .
+                ' object(s).'
+            );
         }
         return $session_access_details[$session_id];
     }
