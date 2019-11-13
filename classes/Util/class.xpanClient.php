@@ -308,22 +308,23 @@ class xpanClient {
         $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
     }
 
+
     /**
+     * @param      $folder_id
+     * @param bool $page_limit Only returns a specific page if true, otherwise everything
+     * @param int  $page
+     *
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page = 0) {
+    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
+    {
         $perpage = 10;
-        $pagination = new Pagination();
-        $pagination->setPageNumber($page);
-        $pagination->setMaxNumberResults($perpage);
-
         $request = new ListSessionsRequest();
-        $request->setPagination($pagination);
         $request->setFolderId($folder_id);
 
         $states = new ArrayOfSessionState();
-        $states->setSessionState(array( SessionState::Complete));
+        $states->setSessionState(array( SessionState::Complete, SessionState::Broadcasting, SessionState::Scheduled ));
         $request->setStates($states);
 
         $this->log->write('*********');
@@ -349,9 +350,21 @@ class xpanClient {
         $sessions = $sessions_result->getGetSessionsListResult();
 
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
-        $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
+        $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
-        return array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
+        $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
+        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
+
+        if ($page_limit) {
+            // Implement manual pagination
+            return array(
+                "count"    => count($sorted_sessions["sessions"]),
+                "sessions" => array_slice($sorted_sessions["sessions"], $page * $perpage, $perpage),
+            );
+        } else {
+            return $sorted_sessions;
+        }
+
     }
 
     /**
@@ -415,7 +428,7 @@ class xpanClient {
 
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($user_access_details[$user_id]) . ' object(s).');
+            $this->log->write('Received ' . (is_array($user_access_details[$user_id]) ? (int) count($user_access_details[$user_id]) : 0) . ' object(s).');
         }
         return $user_access_details[$user_id];
     }
@@ -448,7 +461,10 @@ class xpanClient {
             }
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($session_access_details[$session_id]) . ' object(s).');
+            $this->log->write('Received ' .
+                (is_array($session_access_details[$session_id]) ? (int) count($session_access_details[$session_id]) : 0 ) .
+                ' object(s).'
+            );
         }
         return $session_access_details[$session_id];
     }

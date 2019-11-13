@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0]
+* Feature: Sorting of added Videos
+* Feature: Show scheduled and live sessions
+* Bugfix: Offline object still accessible
+
+## [1.2.0]
+* Sorting functionality
+
 ## [1.1.0]
 * Support for ILIAS 5.4
 * Dropped support for ILIAS 5.2

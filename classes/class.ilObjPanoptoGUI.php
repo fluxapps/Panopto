@@ -109,7 +109,7 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
         $this->tpl->setTitle($this->object->getTitle());
         $this->tpl->setDescription($this->object->getDescription());
 
-        if (!xpanSettings::find($this->obj_id)->isOnline()) {
+        if ($this->object->getOfflineStatus()) {
             /**
              * @var $list_gui ilObjPanoptoListGUI
              */

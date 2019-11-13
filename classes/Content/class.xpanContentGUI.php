@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../../vendor/autoload.php";
 
 /**
  * Class xpanContentGUI
@@ -8,6 +9,11 @@
  * @ilCtrl_isCalledBy xpanContentGUI: ilObjPanoptoGUI
  */
 class xpanContentGUI extends xpanGUI {
+
+    const CMD_SHOW = "index";
+    const CMD_SORTING = "sorting";
+    const TAB_SUB_SHOW = "subShow";
+    const TAB_SUB_SORTING = "subSorting";
 
     /**
      * @var xpanClient
@@ -45,7 +51,8 @@ class xpanContentGUI extends xpanGUI {
      * @throws Exception
      */
     protected function index() {
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, $_GET['xpan_page']);
+        $this->addSubTabs(self::TAB_SUB_SHOW);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, true, $_GET['xpan_page']);
 
         if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
@@ -125,6 +132,16 @@ class xpanContentGUI extends xpanGUI {
     }
 
 
+    protected function sorting()
+    {
+        $this->addSubTabs(self::TAB_SUB_SORTING);
+
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
+        $this->tpl->setContent($sort_table_gui->getHTML());
+    }
+
+
     /**
      * @param $duration_in_seconds
      * @return string
@@ -146,4 +163,61 @@ class xpanContentGUI extends xpanGUI {
         $modal->setBody('<section><div id="xpan_video_container"></div></section>');
         return $modal->getHTML();
     }
+
+
+    /**
+     * Add sub tabs and activate the forwarded sub tab in the parameter.
+     *
+     * @param string $active_sub_tab
+     */
+    protected function addSubTabs($active_sub_tab)
+    {
+        global $DIC;
+
+        $DIC->tabs()->addSubTab(self::TAB_SUB_SHOW,
+            $this->pl->txt('content_show'),
+            $DIC->ctrl()->getLinkTarget($this, self::CMD_SHOW)
+        );
+
+        if ($DIC->access()->checkAccess("write", "", $this->parent_gui->ref_id)) {
+            $DIC->tabs()->addSubTab(self::TAB_SUB_SORTING,
+                $this->pl->txt('content_sorting'),
+                $DIC->ctrl()->getLinkTarget($this, self::CMD_SORTING)
+            );
+        }
+
+        $DIC->tabs()->activateSubTab($active_sub_tab);
+    }
+
+
+    /**
+     * ajax
+     */
+    public function reorder()
+    {
+        $ids = $_POST['ids'];
+        $precedence = 1;
+
+        $previousEntry = SorterEntry::where(array("ref_id" => $this->parent_gui->ref_id))->first();
+
+        // Delete previous entries
+        if (!is_null($previousEntry)) {
+            foreach (SorterEntry::get() as $entry) {
+                $entry->delete();
+            }
+        }
+
+        foreach ($ids as $id) {
+            $entry = new SorterEntry();
+            $entry->setRefId($this->parent_gui->ref_id);
+            $entry->setPrecedence($precedence);
+            $entry->setSessionId($id);
+            $entry->create();
+            $precedence++;
+        }
+
+        echo "{\"success\": true}";
+        exit;
+    }
+
 }

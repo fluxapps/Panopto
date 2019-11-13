@@ -87,6 +87,19 @@ class ilObjPanoptoAccess extends ilObjectPluginAccess {
 
 
     /**
+     * @param int $a_obj_id
+     *
+     * @return bool
+     */
+    static function _isOffline($a_obj_id)
+    {
+        /** @var xpanSettings $setting */
+        $setting = xpanSettings::find($a_obj_id);
+        return is_null($setting) || !$setting->isOnline();
+    }
+
+
+    /**
      * @param string   $a_cmd
      * @param string   $a_permission
      * @param int|null $a_ref_id

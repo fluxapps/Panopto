@@ -33,3 +33,8 @@ xpan_read#:#Lesezugriff: Videos können angezeigt werden
 xpan_write#:#Einstellungen bearbeiten: Einstellungen und Inhalte können bearbeitet werden
 xpan_delete#:#Löschen: Objekt kann gelöscht werden
 xpan_edit_permission#:#Rechteeinstellungen ändern: Rechteeinstellungen ändern
+content_show#:#Anzeigen
+content_sorting#:#Sortierung
+content_thumbnail#:#Thumbnail
+content_title#:#Titel
+content_description#:#Beschreibung

@@ -39,3 +39,7 @@ if (!$query->numRows()) {
     ));
 }
 ?>
+<#3>
+<?php
+SorterEntry::updateDB();
+?>
