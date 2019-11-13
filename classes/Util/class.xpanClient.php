@@ -324,7 +324,7 @@ class xpanClient {
         $request->setFolderId($folder_id);
 
         $states = new ArrayOfSessionState();
-        $states->setSessionState(array( SessionState::Complete));
+        $states->setSessionState(array( SessionState::Complete, SessionState::Broadcasting, SessionState::Scheduled ));
         $request->setStates($states);
 
         $this->log->write('*********');
