@@ -324,7 +324,7 @@ class xpanClient {
         $request->setFolderId($folder_id);
 
         $states = new ArrayOfSessionState();
-        $states->setSessionState(array( SessionState::Complete));
+        $states->setSessionState(array( SessionState::Complete, SessionState::Broadcasting, SessionState::Scheduled ));
         $request->setStates($states);
 
         $this->log->write('*********');
@@ -350,7 +350,7 @@ class xpanClient {
         $sessions = $sessions_result->getGetSessionsListResult();
 
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
-        $this->log->write('Received ' . (int) count($sessions->getTotalNumberResults()) . ' object(s).');
+        $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
         $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
         $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
@@ -428,7 +428,7 @@ class xpanClient {
 
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($user_access_details[$user_id]) . ' object(s).');
+            $this->log->write('Received ' . (is_array($user_access_details[$user_id]) ? (int) count($user_access_details[$user_id]) : 0) . ' object(s).');
         }
         return $user_access_details[$user_id];
     }
@@ -461,7 +461,10 @@ class xpanClient {
             }
 
             $this->log->write('Status: ' . substr($access_management->__last_response_headers, 0, strpos($access_management->__last_response_headers, "\r\n")));
-            $this->log->write('Received ' . (int) count($session_access_details[$session_id]) . ' object(s).');
+            $this->log->write('Received ' .
+                (is_array($session_access_details[$session_id]) ? (int) count($session_access_details[$session_id]) : 0 ) .
+                ' object(s).'
+            );
         }
         return $session_access_details[$session_id];
     }

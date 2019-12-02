@@ -5,7 +5,7 @@
  *
  * @author Theodor Truffer <tt@studer-raimann.ch>
  */
-class xpanSettings extends ACtiveRecord {
+class xpanSettings extends ActiveRecord {
 
     const DB_TABLE_NAME = 'xpan_settings';
 

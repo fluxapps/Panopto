@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0]
+* Feature: Sorting of added Videos
+* Feature: Show scheduled and live sessions
+* Bugfix: Offline object still accessible
+
 ## [1.2.0]
 * Sorting functionality
 
