@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.1]
+* Bugfix: Can't play videos on content tab
+* Bugfix: Unexpected error message on content tab with no videos
+
 ## [1.3.0]
 * Feature: Sorting of added Videos
 * Feature: Show scheduled and live sessions
