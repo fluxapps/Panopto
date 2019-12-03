@@ -147,30 +147,33 @@ class SorterEntry extends ActiveRecord
             "count"    => $sessions["count"],
             "sessions" => [],
         ];
-        $entries = SorterEntry::orderBy("precedence");
 
-        /* @var $entry SorterEntry */
-        foreach ($entries->get() as $entry) {
-            $session = null;
-            foreach ($sessions["sessions"] as $sessionEntry) {
-                if ($sessionEntry->getId() === $entry->getSessionId()) {
-                    $session = $sessionEntry;
+        if ($sessions["count"] > 0) {
+            $entries = SorterEntry::orderBy("precedence");
+
+            /* @var $entry SorterEntry */
+            foreach ($entries->get() as $entry) {
+                $session = null;
+                foreach ($sessions["sessions"] as $sessionEntry) {
+                    if ($sessionEntry->getId() === $entry->getSessionId()) {
+                        $session = $sessionEntry;
+                    }
+                }
+
+                if (!is_null($session)) {
+                    array_push($sorted["sessions"], $session);
                 }
             }
 
-            if (!is_null($session)) {
+            $diff = array_udiff($sessions["sessions"], $sorted["sessions"],
+                function ($obj_a, $obj_b) {
+                    return strcmp($obj_a->getId(), $obj_b->getId());
+                }
+            );
+
+            foreach ($diff as $session) {
                 array_push($sorted["sessions"], $session);
             }
-        }
-
-        $diff = array_udiff($sessions["sessions"], $sorted["sessions"],
-            function ($obj_a, $obj_b) {
-                return strcmp($obj_a->getId(), $obj_b->getId());
-            }
-        );
-
-        foreach ($diff as $session) {
-            array_push($sorted["sessions"], $session);
         }
 
         return $sorted;
