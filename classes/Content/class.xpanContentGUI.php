@@ -125,23 +125,10 @@ class xpanContentGUI extends xpanGUI {
             $tpl->parseCurrentBlock();
         }
 
-        // Authentication
-        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/waiter.css');
-        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/xoctWaiter.css');
-        $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/waiter.js');
-        $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/xoctWaiter.js');
-        $this->tpl->addOnLoadCode('xoctWaiter.init("waiter");');
-        $this->tpl->addOnLoadCode('xoctWaiter.show();');
-        $auth_html = xpanLTILaunch::launch();
-        $this->tpl->addOnLoadCode('$("#lti_form").submit();');
-        $this->tpl->addOnLoadCode('srWaiter.show();');
-        $this->tpl->addOnLoadCode('$("iframe#basicltiLaunchFrame").load(function(){xoctWaiter.hide();});');
-        $this->tpl->addOnLoadCode('$("iframe#basicltiLaunchFrame").hide();');
-
         $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css');
         $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/Panopto.js');
         $this->tpl->addOnLoadCode('Panopto.base_url = "https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . '";');
-        $this->tpl->setContent($tpl->get() . $this->getModalPlayer() . $auth_html);
+        $this->tpl->setContent($tpl->get() . $this->getModalPlayer());
     }
 
 
