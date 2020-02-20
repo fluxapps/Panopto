@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.3.2]
+* Bugfix: Viewing videos granted Creator permissions
+
 ## [1.3.1]
 * Bugfix: Can't play videos on content tab
 * Bugfix: Unexpected error message on content tab with no videos
