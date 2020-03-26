@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.3.3]
+* Bugfix: removed limit of 25 videos
+
 ## [1.3.2]
 * Bugfix: Viewing videos granted Creator permissions
 
