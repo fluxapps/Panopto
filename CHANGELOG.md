@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.3.4]
+* Bugfix: fixed bug in pagination
+
 ## [1.3.3]
 * Bugfix: removed limit of 25 videos
 

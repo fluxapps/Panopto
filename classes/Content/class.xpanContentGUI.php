@@ -52,7 +52,7 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, false, $_GET['xpan_page']);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, true, $_GET['xpan_page']);
 
         if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
