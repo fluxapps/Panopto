@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.3.5]
+* Bugfix: fixed sorting
+
 ## [1.3.4]
 * Bugfix: fixed bug in pagination
 
