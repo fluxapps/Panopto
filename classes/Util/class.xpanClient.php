@@ -323,6 +323,11 @@ class xpanClient {
         $request = new ListSessionsRequest();
         $request->setFolderId($folder_id);
 
+        $pagination = new \Panopto\SessionManagement\Pagination();
+        $pagination->setMaxNumberResults(999);
+        $pagination->setPageNumber(0);
+        $request->setPagination($pagination);
+
         $states = new ArrayOfSessionState();
         $states->setSessionState(array( SessionState::Complete, SessionState::Broadcasting, SessionState::Scheduled ));
         $request->setStates($states);
