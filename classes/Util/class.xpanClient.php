@@ -8,15 +8,14 @@ use Panopto\AccessManagement\GetSessionAccessDetails;
 use Panopto\AccessManagement\GetUserAccessDetails;
 use Panopto\AccessManagement\GrantUsersAccessToFolder;
 use Panopto\AccessManagement\GrantUsersViewerAccessToSession;
-use Panopto\AccessManagement\SessionAccessDetails;
 use Panopto\AccessManagement\UserAccessDetails;
 use Panopto\Client as PanoptoClient;
+use Panopto\RemoteRecorderManagement\Pagination;
 use Panopto\SessionManagement\ArrayOfSessionState;
 use Panopto\SessionManagement\Folder;
 use Panopto\SessionManagement\GetAllFoldersByExternalId;
 use Panopto\SessionManagement\GetSessionsList;
 use Panopto\SessionManagement\ListSessionsRequest;
-use Panopto\SessionManagement\Pagination;
 use Panopto\SessionManagement\SessionManagement;
 use Panopto\SessionManagement\SessionState;
 use Panopto\UserManagement\CreateUser;
@@ -315,22 +314,19 @@ class xpanClient {
      * @param bool $page_limit Only returns a specific page if true, otherwise everything
      * @param int  $page
      *
-     * @param int  $per_page
-     *
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0, $per_page = 10)
+    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
     {
+        $perpage = 10;
         $request = new ListSessionsRequest();
         $request->setFolderId($folder_id);
 
-        if ($page_limit) {
-            $pagination = new Pagination();
-            $pagination->setMaxNumberResults($per_page);
-            $pagination->setPageNumber($page);
-            $request->setPagination($pagination);
-        }
+        $pagination = new \Panopto\SessionManagement\Pagination();
+        $pagination->setMaxNumberResults(999);
+        $pagination->setPageNumber(0);
+        $request->setPagination($pagination);
 
         $states = new ArrayOfSessionState();
         $states->setSessionState(array( SessionState::Complete, SessionState::Broadcasting, SessionState::Scheduled ));
@@ -364,7 +360,16 @@ class xpanClient {
         $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
         $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
 
-        return $sorted_sessions;
+        if ($page_limit) {
+            // Implement manual pagination
+            return array(
+                "count"    => count($sorted_sessions["sessions"]),
+                "sessions" => array_slice($sorted_sessions["sessions"], $page * $perpage, $perpage),
+            );
+        } else {
+            return $sorted_sessions;
+        }
+
     }
 
     /**
@@ -435,7 +440,7 @@ class xpanClient {
 
     /**
      * @param $session_id
-     * @return SessionAccessDetails
+     * @return \Panopto\AccessManagement\SessionAccessDetails
      * @throws Exception
      */
     public function getSessionAccessDetails($session_id) {
