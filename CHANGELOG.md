@@ -1,5 +1,8 @@
 # Changelog
 
+## [x]
+* Fix offline status check
+
 ## [1.3.5]
 * Bugfix: fixed sorting
 
