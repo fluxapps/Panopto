@@ -39,7 +39,15 @@ class xpanUtil {
 	public static function getUserIdentifier($user_id = 0) {
         global $DIC;
         $user = $user_id ? new ilObjUser($user_id) : $DIC->user();
-        return (xpanConfig::getConfig(xpanConfig::F_USER_ID) == xpanConfig::SUB_F_LOGIN) ? $user->getLogin() : $user->getExternalAccount();
+        switch (xpanConfig::getConfig(xpanConfig::F_USER_ID)) {
+            case xpanConfig::SUB_F_LOGIN:
+                return $user->getLogin();
+            case xpanConfig::SUB_F_EMAIL:
+                return $user->getEmail();
+            case xpanConfig::SUB_F_EXT_ACCOUNT:
+            default:
+                return $user->getExternalAccount();
+        }
     }
 
 

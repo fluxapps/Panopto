@@ -17,6 +17,7 @@ class xpanConfig extends ActiveRecord {
     const F_USER_ID = 'user_id';
     const SUB_F_LOGIN = 'login';
     const SUB_F_EXT_ACCOUNT = 'external_account';
+    const SUB_F_EMAIL = 'email';
 
     /**
      * @var array
