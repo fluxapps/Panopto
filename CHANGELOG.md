@@ -1,6 +1,7 @@
 # Changelog
 
 ## [x]
+* Email user mapping
 * Fix offline status check
 
 ## [1.3.5]
