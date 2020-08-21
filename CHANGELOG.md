@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.6]
+* Last ILIAS 5.3 Release
+* Email user mapping
+* Fix offline status check
+
 ## [1.3.5]
 * Bugfix: fixed sorting
 

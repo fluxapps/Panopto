@@ -92,6 +92,7 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
         $input->setOptions(array(
             xpanConfig::SUB_F_LOGIN => $this->parent_gui->txt(xpanConfig::SUB_F_LOGIN),
             xpanConfig::SUB_F_EXT_ACCOUNT => $this->parent_gui->txt(xpanConfig::SUB_F_EXT_ACCOUNT),
+            xpanConfig::SUB_F_EMAIL => $this->parent_gui->txt(xpanConfig::SUB_F_EMAIL)
         ));
         $this->addItem($input);
 

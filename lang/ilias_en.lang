@@ -14,6 +14,7 @@ conf_user_id#:#User Identification
 conf_user_id_info#:#Defines which user field is sent to Panopto as user identification
 conf_login#:#Login
 conf_external_account#:#External Account
+conf_email#:#Email
 msg_no_videos#:#There are no videos yet.
 msg_success#:#Changes saved successfully.
 tab_videos#:#Videos

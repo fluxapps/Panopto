@@ -71,7 +71,7 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
         $props = parent::getCustomProperties(array());
 
         $settings = xpanSettings::find($this->obj_id);
-        if (!$settings->getIsOnline()) {
+        if (!$settings->isOnline()) {
             $props[] = array(
                 'alert' => true,
                 'newline' => true,
