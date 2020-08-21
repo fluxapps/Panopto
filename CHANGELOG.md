@@ -1,6 +1,7 @@
 # Changelog
 
-## [x]
+## [1.3.6]
+* Last ILIAS 5.3 Release
 * Email user mapping
 * Fix offline status check
 
