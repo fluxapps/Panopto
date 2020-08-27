@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0]
+* ILIAS 6 support
+* Remove ILIAS 5.3 support
+* Min. PHP 7.0
+* Fix Docker-ILIAS log
+
 ## [1.3.6]
 * Last ILIAS 5.3 Release
 * Email user mapping

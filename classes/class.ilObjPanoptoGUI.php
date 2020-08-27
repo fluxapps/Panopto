@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-
+use srag\DIC\Panopto\DICTrait;
 /**
  * Class ilObjPanoptoGUI
  *
@@ -11,7 +11,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
  *
  */
 class ilObjPanoptoGUI extends ilObjectPluginGUI {
-
+    use DICTrait;
     const TAB_CONTENT = 'content';
     const TAB_INFO = 'info';
     const TAB_VIDEOS = 'videos';
@@ -32,7 +32,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
             ilUtil::sendFailure($this->plugin->txt('access_denied'), true);
             $this->ctrl->returnToParent($this);
         }
+        if (self::version()->is6()) {
+            $this->tpl->loadStandardTemplate();
+        } else {
         $this->tpl->getStandardTemplate();
+        }
 
         try {
             switch ($next_class) {
@@ -44,7 +48,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
                     $this->tabs_gui->activateTab(self::TAB_CONTENT);
                     $xvmpGUI = new xpanContentGUI($this);
                     $this->ctrl->forwardCommand($xvmpGUI);
+                    if (self::version()->is6()) {
+                        $this->tpl->printToStdout();
+                    } else {
                     $this->tpl->show();
+                    }
                     break;
                 case 'xpansettingsgui':
                     if (!$this->ctrl->isAsynch()) {
@@ -54,7 +62,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
                     $this->tabs_gui->activateTab(self::TAB_SETTINGS);
                     $xvmpGUI = new xpanSettingsGUI($this);
                     $this->ctrl->forwardCommand($xvmpGUI);
+                    if (self::version()->is6()) {
+                        $this->tpl->printToStdout();
+                    } else {
                     $this->tpl->show();
+                    }
                     break;
                 case 'xpanvideosgui':
                     if (!$this->ctrl->isAsynch()) {
@@ -64,7 +76,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
                     $this->tabs_gui->activateTab(self::TAB_VIDEOS);
                     $xvmpGUI = new xpanVideosGUI($this);
                     $this->ctrl->forwardCommand($xvmpGUI);
+                    if (self::version()->is6()) {
+                        $this->tpl->printToStdout();
+                    } else {
                     $this->tpl->show();
+                    }
                     break;
 
                 case "ilinfoscreengui":
@@ -75,7 +91,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
                     $this->tabs_gui->activateTab(self::TAB_INFO);
                     $this->checkPermission("visible");
                     $this->infoScreen();	// forwards command
+                    if (self::version()->is6()) {
+                        $this->tpl->printToStdout();
+                    } else {
                     $this->tpl->show();
+                    }
                     break;
                 case 'ilpermissiongui':
                     $this->initHeader(false);
@@ -93,7 +113,11 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
         } catch (Exception $e) {
             ilUtil::sendFailure($e->getMessage());
             if (!$this->creation_mode) {
+                if (self::version()->is6()) {
+                    $this->tpl->printToStdout();
+                } else {
                 $this->tpl->show();
+                }
             }
         }
     }
