@@ -1,5 +1,8 @@
 # Changelog
 
+## [x]
+- Add missing object translations
+
 ## [1.4.0]
 * ILIAS 6 support
 * Remove ILIAS 5.3 support
