@@ -20,7 +20,7 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
         $this->info_screen_enabled = true;
         $this->delete_enabled = true;
         $this->cut_enabled = false;
-        $this->copy_enabled = false;
+        $this->copy_enabled = true;
 
         $commands = [
             [
@@ -32,7 +32,14 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
 
         return $commands;
     }
-
+    protected function initListActions()
+    {
+        $this->delete_enabled = true;
+        $this->cut_enabled = false;
+        $this->subscribe_enabled = false;
+        $this->link_enabled = false;
+        $this->info_screen_enabled = true;
+    }
     /**
      * @return string
      */
@@ -83,4 +90,5 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
 
         return $props;
     }
+
 }

@@ -34,7 +34,7 @@ class xpanContentGUI extends xpanGUI {
 
         $this->client = xpanClient::getInstance();
 
-        $folder = $this->client->getFolderByExternalId($_GET['ref_id']);
+        $folder = $this->client->getFolderByExternalId($this->getObject()->getFolderExtId());
         if (!$folder) {
             throw new ilException('No external folder found for this object.');
         }

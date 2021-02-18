@@ -45,5 +45,9 @@ class ilPanoptoPlugin extends ilRepositoryObjectPlugin {
         $DIC->database()->dropTable(SorterEntry::TABLE_NAME);
     }
 
+    public function allowCopy()
+    {
+        return true;
+    }
 
 }

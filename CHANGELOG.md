@@ -1,7 +1,8 @@
 # Changelog
 
-## [x]
-- Add missing object translations
+## [1.5.0]
+- Fix: Add missing object translations
+- Feature: copy objects (cloned objects show the same videos as the originals)
 
 ## [1.4.0]
 * ILIAS 6 support
