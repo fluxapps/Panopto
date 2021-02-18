@@ -10,7 +10,6 @@ PanoptoSorter = {
     },
 
     reSort: function (e, ui) {
-        xoctWaiter.show();
         var order = [];
         $("div.ilTableOuter table tbody tr").each(function () {
             order.push($(this).attr('id'));
@@ -23,8 +22,8 @@ PanoptoSorter = {
             data: {
                 "ids": order
             }
-        }).always(function (data, textStatus, jqXHR) {
-            xoctWaiter.hide();
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert("Fehler bei der Sortierung. Bitte laden Sie die Seite neu.");
         });
     },
 
