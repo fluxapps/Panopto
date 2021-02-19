@@ -142,7 +142,7 @@ class xpanContentGUI extends xpanGUI {
             $tpl->parseCurrentBlock();
         }
 
-        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css');
+        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css?2');
         $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/Panopto.js');
         $this->tpl->addOnLoadCode('Panopto.base_url = "https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . '";');
         $this->tpl->setContent($tpl->get() . $this->getModalPlayer());

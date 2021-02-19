@@ -52,8 +52,8 @@ div.xpan_duration_container {
 
 .xpan_playlist_icon {
 	position: absolute;
-	left: 323px;
-	bottom: 9px;
+	left: 9px;
+	top: 9px;
 	background-color:rgba(0, 0, 0, 0.5);
 	width: 35px;
 	height: 35px;
