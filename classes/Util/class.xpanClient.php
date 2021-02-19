@@ -10,7 +10,6 @@ use Panopto\AccessManagement\GrantUsersAccessToFolder;
 use Panopto\AccessManagement\GrantUsersViewerAccessToSession;
 use Panopto\AccessManagement\UserAccessDetails;
 use Panopto\Client as PanoptoClient;
-use Panopto\RemoteRecorderManagement\Pagination;
 use Panopto\SessionManagement\ArrayOfSessionState;
 use Panopto\SessionManagement\Folder;
 use Panopto\SessionManagement\GetAllFoldersByExternalId;
@@ -23,6 +22,7 @@ use Panopto\UserManagement\GetUserByKey;
 use Panopto\UserManagement\SyncExternalUser;
 use Panopto\UserManagement\User;
 use Panopto\UserManagement\UserManagement;
+use srag\Plugins\Panopto\DTO\ContentObjectBuilder;
 
 /**
  * Class xpanClient
@@ -63,6 +63,10 @@ class xpanClient {
      */
     protected $auth;
     /**
+     * @var xpanRESTClient
+     */
+    protected $rest_client;
+    /**
      * @var xpanLog
      */
     protected $log;
@@ -77,6 +81,7 @@ class xpanClient {
         $this->panoptoclient = new PanoptoClient(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
         $this->panoptoclient->setAuthenticationInfo(xpanUtil::getApiUserKey(), '', xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY));
         $this->auth = $this->panoptoclient->getAuthenticationInfo();
+        $this->rest_client = xpanRESTClient::getInstance();
     }
 
     /**
@@ -117,7 +122,8 @@ class xpanClient {
      * @throws Exception
      */
     public function getFolderByExternalId($ext_id) {
-        return array_shift($this->getAllFoldersByExternalId(array($ext_id)));
+        $folders = $this->getAllFoldersByExternalId(array($ext_id));
+        return array_shift($folders);
     }
 
     /**
@@ -316,7 +322,7 @@ class xpanClient {
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0, int $ref_id = 0) : array
+    public function getContentObjectsOfFolder($folder_id, $page_limit = false, $page = 0, int $ref_id = 0) : array
     {
         $perpage = 10;
         $request = new ListSessionsRequest();
@@ -356,17 +362,19 @@ class xpanClient {
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
         $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
-        $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
-        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions, $ref_id);
+        $sessions = ContentObjectBuilder::buildSessionsDTOsFromSessions($sessions->getResults()->getSession());
+        $playlists = $this->rest_client->getPlaylistsOfFolder($folder_id);
+        $objects = array_merge($sessions, $playlists);
+        $objects = SorterEntry::generateSortedObjects($objects, $ref_id);
 
         if ($page_limit) {
             // Implement manual pagination
             return array(
-                "count"    => count($sorted_sessions["sessions"]),
-                "sessions" => array_slice($sorted_sessions["sessions"], $page * $perpage, $perpage),
+                "count"    => count($objects),
+                "objects" => array_slice($objects, $page * $perpage, $perpage),
             );
         } else {
-            return $sorted_sessions;
+            return $objects;
         }
 
     }

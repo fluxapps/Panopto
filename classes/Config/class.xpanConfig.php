@@ -1,4 +1,7 @@
 <?php
+
+use srag\Plugins\Panopto\DTO\RESTToken;
+
 /**
  * Class xpanConfig
  *
@@ -15,6 +18,10 @@ class xpanConfig extends ActiveRecord {
     const F_INSTANCE_NAME = 'instance_name';
     const F_APPLICATION_KEY = 'application_key';
     const F_USER_ID = 'user_id';
+    const F_REST_CLIENT_NAME = 'rest_client_name';
+    const F_REST_CLIENT_SECRET = 'rest_client_secret';
+    const F_REST_CLIENT_ID = 'rest_client_id';
+    const F_REST_TOKEN = 'rest_token';
     const SUB_F_LOGIN = 'login';
     const SUB_F_EXT_ACCOUNT = 'external_account';
     const SUB_F_EMAIL = 'email';
@@ -118,5 +125,19 @@ class xpanConfig extends ActiveRecord {
      */
     public function getValue() {
         return $this->value;
+    }
+
+    public static function storeToken(RESTToken $token)
+    {
+        self::set(self::F_REST_TOKEN, $token->jsonSerialize());
+    }
+
+    /**
+     * @return RESTToken|null
+     */
+    public static function getToken()
+    {
+        $serialized_token = self::getConfig(self::F_REST_TOKEN);
+        return $serialized_token ? RESTToken::jsonUnserialize($serialized_token) : null;
     }
 }

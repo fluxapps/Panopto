@@ -1,4 +1,7 @@
 <?php
+
+use srag\Plugins\Panopto\DTO\ContentObject;
+
 require_once __DIR__ . "/../../vendor/autoload.php";
 
 /**
@@ -52,19 +55,19 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $sessions = $this->client->getSessionsOfFolder(
+        $content_objects = $this->client->getContentObjectsOfFolder(
             $this->folder_id,
             true,
             $_GET['xpan_page'],
             $this->getObject()->getReferenceId());
-
-        if (!$sessions['count']) {
+//        xpanRESTClient::getInstance()->getPlaylistsOfFolder($this->folder_id);
+        if (!$content_objects['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
             return;
         }
 
         $tpl = new ilTemplate('tpl.content_list.html', true, true, $this->pl->getDirectory());
-        $pages = 1 + floor($sessions['count'] / 10);
+        $pages = 1 + floor($content_objects['count'] / 10);
 
         // "previous" button
         if ($_GET['xpan_page']) {
@@ -105,7 +108,7 @@ class xpanContentGUI extends xpanGUI {
         }
 
         // "next" button
-        if ($sessions['count'] > (($_GET['xpan_page'] + 1)*10)) {
+        if ($content_objects['count'] > (($_GET['xpan_page'] + 1)*10)) {
             $this->ctrl->setParameter($this, 'xpan_page', $_GET['xpan_page'] + 1);
             $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
             // top
@@ -119,13 +122,23 @@ class xpanContentGUI extends xpanGUI {
         }
 
         // videos
-        foreach ($sessions['sessions'] as $session) {
+        /** @var ContentObject $object */
+        foreach ($content_objects['objects'] as $object) {
+            if ($object instanceof \srag\Plugins\Panopto\DTO\Session) {
+                $tpl->setCurrentBlock('duration');
+                $tpl->setVariable('DURATION', $this->formatDuration($object->getDuration()));
+                $tpl->parseCurrentBlock();
+                $tpl->setVariable('IS_PLAYLIST', 'false');
+            } else {
+                $tpl->setVariable('IS_PLAYLIST', 'true');
+                $tpl->touchBlock('playlist_icon');
+            }
+
             $tpl->setCurrentBlock('list_item');
-            $tpl->setVariable('SID', $session->getId());
-            $tpl->setVariable('THUMBNAIL', 'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl());
-            $tpl->setVariable('TITLE', $session->getName());
-            $tpl->setVariable('DESCRIPTION', $session->getDescription());
-            $tpl->setVariable('DURATION', $this->formatDuration($session->getDuration()));
+            $tpl->setVariable('ID', $object->getId());
+            $tpl->setVariable('THUMBNAIL', $object->getThumbnailUrl());
+            $tpl->setVariable('TITLE', $object->getTitle());
+            $tpl->setVariable('DESCRIPTION', $object->getDescription());
             $tpl->parseCurrentBlock();
         }
 
@@ -140,8 +153,8 @@ class xpanContentGUI extends xpanGUI {
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
 
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, false, 0, $this->getObject()->getReferenceId());
-        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
+        $objects = $this->client->getContentObjectsOfFolder($this->folder_id, false, 0, $this->getObject()->getReferenceId());
+        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $objects);
         $this->tpl->setContent($sort_table_gui->getHTML());
     }
 
@@ -220,7 +233,7 @@ class xpanContentGUI extends xpanGUI {
                 $entry = new SorterEntry();
                 $entry->setRefId($this->getObject()->getReferenceId());
                 $entry->setPrecedence($precedence);
-                $entry->setSessionId($id);
+                $entry->setObjectId($id);
                 $entry->create();
                 $precedence++;
             }
