@@ -135,13 +135,13 @@ class SorterEntry extends ActiveRecord
         $this->session_id = $session_id;
     }
 
-
     /**
      * @param array $sessions
-     *
+     * @param int   $ref_id
      * @return array
+     * @throws Exception
      */
-    public static function generateSortedSessions($sessions)
+    public static function generateSortedSessions(array $sessions, int $ref_id = 0) : array
     {
         $sorted = [
             "count"    => $sessions["count"],
@@ -152,7 +152,7 @@ class SorterEntry extends ActiveRecord
             $entries = SorterEntry::orderBy("precedence");
 
             /* @var $entry SorterEntry */
-            foreach ($entries->get() as $entry) {
+            foreach (($ref_id > 0 ? $entries->where(['ref_id' => $ref_id])->get() : $entries->get()) as $entry) {
                 $session = null;
                 foreach ($sessions["sessions"] as $sessionEntry) {
                     if ($sessionEntry->getId() === $entry->getSessionId()) {

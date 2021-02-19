@@ -52,7 +52,11 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, true, $_GET['xpan_page']);
+        $sessions = $this->client->getSessionsOfFolder(
+            $this->folder_id,
+            true,
+            $_GET['xpan_page'],
+            $this->getObject()->getReferenceId());
 
         if (!$sessions['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
@@ -136,7 +140,7 @@ class xpanContentGUI extends xpanGUI {
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
 
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
+        $sessions = $this->client->getSessionsOfFolder($this->folder_id, false, 0, $this->getObject()->getReferenceId());
         $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
         $this->tpl->setContent($sort_table_gui->getHTML());
     }
@@ -195,29 +199,36 @@ class xpanContentGUI extends xpanGUI {
      */
     public function reorder()
     {
-        $ids = $_POST['ids'];
-        $precedence = 1;
+        global $DIC;
+        $atom_query = new ilAtomQueryLock($DIC->database());
+        $atom_query->addTableLock(SorterEntry::TABLE_NAME);
+        $atom_query->addTableLock(SorterEntry::TABLE_NAME . '_seq');
+        $atom_query->addQueryCallable(function(ilDBInterface $db) {
+            $ids = $_POST['ids'];
+            $precedence = 1;
 
-        $previousEntry = SorterEntry::where(array("ref_id" => $this->parent_gui->ref_id))->first();
+            $existingEntries = SorterEntry::where(["ref_id" => $this->getObject()->getReferenceId()]);
 
-        // Delete previous entries
-        if (!is_null($previousEntry)) {
-            foreach (SorterEntry::get() as $entry) {
-                $entry->delete();
+            // Delete previous entries
+            if ($existingEntries->hasSets()) {
+                foreach ($existingEntries->get() as $entry) {
+                    $entry->delete();
+                }
             }
-        }
 
-        foreach ($ids as $id) {
-            $entry = new SorterEntry();
-            $entry->setRefId($this->parent_gui->ref_id);
-            $entry->setPrecedence($precedence);
-            $entry->setSessionId($id);
-            $entry->create();
-            $precedence++;
-        }
+            foreach ($ids as $id) {
+                $entry = new SorterEntry();
+                $entry->setRefId($this->getObject()->getReferenceId());
+                $entry->setPrecedence($precedence);
+                $entry->setSessionId($id);
+                $entry->create();
+                $precedence++;
+            }
 
-        echo "{\"success\": true}";
-        exit;
+            echo "{\"success\": true}";
+            exit;
+        });
+        $atom_query->run();
     }
 
 }

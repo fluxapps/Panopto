@@ -308,16 +308,15 @@ class xpanClient {
         $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
     }
 
-
     /**
      * @param      $folder_id
      * @param bool $page_limit Only returns a specific page if true, otherwise everything
      * @param int  $page
-     *
+     * @param int  $ref_id
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
+    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0, int $ref_id = 0) : array
     {
         $perpage = 10;
         $request = new ListSessionsRequest();
@@ -358,7 +357,7 @@ class xpanClient {
         $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
         $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
-        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
+        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions, $ref_id);
 
         if ($page_limit) {
             // Implement manual pagination

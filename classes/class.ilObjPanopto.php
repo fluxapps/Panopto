@@ -30,7 +30,12 @@ class ilObjPanopto extends ilObjectPlugin {
         return xpanSettings::find($this->getId());
     }
 
-    private function getReferenceId() : int
+    /**
+     * get ref_id, but load if not yet loaded
+     *
+     * @return int
+     */
+    public function getReferenceId() : int
     {
         return $this->getRefId() ?? self::_getAllReferences($this->getId())[0];
     }
