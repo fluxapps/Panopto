@@ -13,7 +13,6 @@ class xpanConfig extends ActiveRecord {
 
     const F_OBJECT_TITLE = 'object_title';
     const F_API_USER = 'api_user';
-    const F_API_PASSWORD = 'api_password';
     const F_HOSTNAME = 'hostname';
     const F_INSTANCE_NAME = 'instance_name';
     const F_APPLICATION_KEY = 'application_key';
@@ -25,6 +24,8 @@ class xpanConfig extends ActiveRecord {
     const SUB_F_LOGIN = 'login';
     const SUB_F_EXT_ACCOUNT = 'external_account';
     const SUB_F_EMAIL = 'email';
+    const F_REST_API_USER = 'rest_api_user';
+    const F_REST_API_PASSWORD = 'rest_api_password';
 
     /**
      * @var array

@@ -61,11 +61,6 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
         $input->setRequired(true);
         $this->addItem($input);
 
-        // API Password
-        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_API_PASSWORD), xpanConfig::F_API_PASSWORD);
-        $input->setInfo($this->parent_gui->txt(xpanConfig::F_API_PASSWORD . '_info'));
-        $input->setRequired(true);
-        $this->addItem($input);
 
         // SOAP API
         $header = new ilFormSectionHeaderGUI();
@@ -104,6 +99,19 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
         $header = new ilFormSectionHeaderGUI();
         $header->setTitle($this->parent_gui->txt('header_rest'));
         $this->addItem($header);
+
+        // REST API user
+        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_REST_API_USER), xpanConfig::F_REST_API_USER);
+        $input->setInfo($this->parent_gui->txt(xpanConfig::F_REST_API_USER . '_info'));
+        $input->setRequired(true);
+        $this->addItem($input);
+
+        // REST API Password
+        $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_REST_API_PASSWORD), xpanConfig::F_REST_API_PASSWORD);
+        $input->setInfo($this->parent_gui->txt(xpanConfig::F_REST_API_PASSWORD . '_info'));
+        $input->setRequired(true);
+        $this->addItem($input);
+
         // client name
         $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_REST_CLIENT_NAME), xpanConfig::F_REST_CLIENT_NAME);
         $input->setInfo($this->parent_gui->txt(xpanConfig::F_REST_CLIENT_NAME . '_info'));

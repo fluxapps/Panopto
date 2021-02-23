@@ -68,8 +68,8 @@ class xpanRESTClient
         $token = xpanConfig::getToken();
         if (!$token || $token->isExpired()) {
             $oauth2_token = $this->oauth2_provider->getAccessToken("password", [
-                "username" => xpanConfig::getConfig(xpanConfig::F_API_USER),
-                "password" => xpanConfig::getConfig(xpanConfig::F_API_PASSWORD),
+                "username" => xpanConfig::getConfig(xpanConfig::F_REST_API_USER),
+                "password" => xpanConfig::getConfig(xpanConfig::F_REST_API_PASSWORD),
                 "scope" => "api"
             ]);
             $token = new RESTToken($oauth2_token->getToken(), $oauth2_token->getExpires());
@@ -92,6 +92,7 @@ class xpanRESTClient
         $response = json_decode(curl_exec($curl), true);
         $error = curl_error($curl);
         $error_nr = curl_errno($curl);
+        // TODO: error handling
         return ContentObjectBuilder::buildPlaylistDTOsFromArray($response["Results"]);
     }
 
