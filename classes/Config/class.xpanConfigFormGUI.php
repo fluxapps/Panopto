@@ -49,23 +49,27 @@ class xpanConfigFormGUI extends ilPropertyFormGUI {
      *
      */
     protected function initForm() {
+        // GENERAL
+        $header = new ilFormSectionHeaderGUI();
+        $header->setTitle($this->parent_gui->txt('header_general'));
+        $this->addItem($header);
+
         // Object Title
         $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_OBJECT_TITLE), xpanConfig::F_OBJECT_TITLE);
         $input->setRequired(true);
         $input->setInfo($this->parent_gui->txt(xpanConfig::F_OBJECT_TITLE . '_info'));
         $this->addItem($input);
 
+        // SOAP API
+        $header = new ilFormSectionHeaderGUI();
+        $header->setTitle($this->parent_gui->txt('header_soap'));
+        $this->addItem($header);
+
         // API User
         $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_API_USER), xpanConfig::F_API_USER);
         $input->setInfo($this->parent_gui->txt(xpanConfig::F_API_USER . '_info'));
         $input->setRequired(true);
         $this->addItem($input);
-
-
-        // SOAP API
-        $header = new ilFormSectionHeaderGUI();
-        $header->setTitle($this->parent_gui->txt('header_soap'));
-        $this->addItem($header);
         // hostname
         $input = new ilTextInputGUI($this->parent_gui->txt(xpanConfig::F_HOSTNAME), xpanConfig::F_HOSTNAME);
         $input->setInfo($this->parent_gui->txt(xpanConfig::F_HOSTNAME . '_info'));

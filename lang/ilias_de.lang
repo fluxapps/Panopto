@@ -1,9 +1,7 @@
 conf_object_title#:#Objekttitel
 conf_object_title_info#:#Anzeigename von Panopto-Objekten im Magazin
 conf_api_user#:#API-Benutzer
-conf_api_user_info#:#Benutzer aus Panopto, welcher zur Kommunikation mit der Panopto-API verwendet wird (muss genügend Rechte besitzen).
-conf_api_password#:#API-Passwort
-conf_api_password_info#:#Passwort des API-Benutzers
+conf_api_user_info#:#Benutzer aus Panopto, welcher zur Kommunikation mit der Panopto-SOAP-API verwendet wird (muss genügend Rechte besitzen).
 conf_hostname#:#Hostname
 conf_hostname_info#:#Ohne http(s)://, z.B. demo.panopto.com
 conf_instance_name#:#Instance Name
@@ -15,6 +13,19 @@ conf_user_id_info#:#Bestimmt, welches Benutzerfeld an Panopto als Benutzername g
 conf_login#:#Benutzername
 conf_external_account#:#Externer Account
 conf_email#:#E-Mail
+conf_header_general#:#Allgemeines
+conf_header_soap#:#SOAP API
+conf_header_rest#:#REST API
+conf_rest_api_user#:#API-Benutzer
+conf_rest_api_user_info#:#Benutzer aus Panopto, welcher zur Kommunikation mit der Panopto-REST-API verwendet wird (muss genügend Rechte besitzen).
+conf_rest_api_password#:#API-Passwort
+conf_rest_api_password_info#:#Passwort des API-Benutzers
+conf_rest_client_name#:#Client Name
+conf_rest_client_name_id#:#Wird in Panopto unter 'API Clients' konfiguriert.
+conf_rest_client_id#:#Client ID
+conf_rest_client_id_info#:#Wird in Panopto unter 'API Clients' konfiguriert.
+conf_rest_client_secret#:#Client Secret
+conf_rest_client_secret_info#:#Wird in Panopto unter 'API Clients' konfiguriert.
 msg_no_videos#:#Diesem Objekt wurden bisher keine Videos hinzugefügt.
 msg_success#:#Änderungen erfolgreich gespeichert.
 tab_videos#:#Videos
