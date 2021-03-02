@@ -42,4 +42,32 @@ class ContentObjectBuilder
         }
         return $sessions_array;
     }
+
+    /**
+     * @param array $array
+     * @return Session
+     */
+    public static function buildSessionDTOFromArray(array $array)
+    {
+        return new Session(
+            $array['Id'],
+            $array['Name'],
+            $array['Description'] ?? '',
+            $array['Urls']['ThumbnailUrl'] ?? '',
+            $array['Duration']
+        );
+    }
+
+    /**
+     * @param array $array
+     * @return Session[]
+     */
+    public static function buildSessionDTOsFromArray(array $array)
+    {
+        $sessions = [];
+        foreach ($array as $item) {
+            $sessions[] = self::buildSessionDTOFromArray($item);
+        }
+        return $sessions;
+    }
 }

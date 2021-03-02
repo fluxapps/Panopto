@@ -5,6 +5,7 @@
 - Improvement: eliminated waiting time when sorting videos
 - Feature: copy objects (cloned objects show the same videos as the originals)
 - Feature: support playlists
+- Change: extended rest client for page editor plugin
 
 ## [1.4.0]
 * ILIAS 6 support

@@ -85,6 +85,15 @@ class xpanClient {
     }
 
     /**
+     * @param string $playlist_id
+     * @return \srag\Plugins\Panopto\DTO\Session[]
+     */
+    public function getSessionsOfPlaylist(string $playlist_id) : array
+    {
+        return $this->rest_client->getSessionsOfPlaylist($playlist_id);
+    }
+
+    /**
      * @return Folder[]
      * @throws Exception
      */

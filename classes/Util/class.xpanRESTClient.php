@@ -90,10 +90,18 @@ class xpanRESTClient
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token->getAccessToken()]);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = json_decode(curl_exec($curl), true);
-        $error = curl_error($curl);
-        $error_nr = curl_errno($curl);
         // TODO: error handling
         return ContentObjectBuilder::buildPlaylistDTOsFromArray($response["Results"]);
     }
 
+    public function getSessionsOfPlaylist(string $playlist_id) : array
+    {
+        $url = $this->base_url . '/Panopto/api/v1/playlists/' . $playlist_id . '/sessions';
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token->getAccessToken()]);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = json_decode(curl_exec($curl), true);
+        return ContentObjectBuilder::buildSessionDTOsFromArray($response['Results']);
+    }
 }
