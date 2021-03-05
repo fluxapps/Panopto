@@ -215,7 +215,7 @@ class ilObjPanoptoGUI extends ilObjectPluginGUI {
      * @return bool
      */
     protected function supportsCloning() {
-        return true;
+        return false;
     }
 
 
