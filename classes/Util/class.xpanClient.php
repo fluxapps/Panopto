@@ -37,13 +37,13 @@ class xpanClient {
 	const ROLE_PUBLISHER = AccessRole::Publisher;
 
     /**
-     * @var xpanClient
+     * @var self
      */
     protected static $instance;
 
 
     /**
-     * @return xpanClient
+     * @return self
      */
     public static function getInstance() {
         if (!isset(self::$instance)) {
@@ -87,10 +87,88 @@ class xpanClient {
     /**
      * @param string $playlist_id
      * @return \srag\Plugins\Panopto\DTO\Session[]
+     * @throws ilException
      */
     public function getSessionsOfPlaylist(string $playlist_id) : array
     {
         return $this->rest_client->getSessionsOfPlaylist($playlist_id);
+    }
+
+    /**
+     * @param string $session_id
+     * @param int    $user_id
+     * @throws Exception
+     */
+    public function grantViewerAccessToSession(string $session_id, $user_id = 0)
+    {
+        if (!$this->hasUserViewerAccessOnSession($session_id, $user_id)) {
+            $this->grantUserViewerAccessToSession($session_id, $user_id);
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @param int    $user_id
+     * @throws ilException
+     */
+    public function grantViewerAccessToPlaylistSessions(string $playlist_id, $user_id = 0)
+    {
+        foreach ($this->getSessionsOfPlaylist($playlist_id) as $session) {
+            if (!$this->hasUserViewerAccessOnSession($session->getId())) {
+                $this->grantViewerAccessToSession($session->getId());
+            }
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @param int    $user_id
+     * @throws ilException
+     */
+    public function grantViewerAccessToPlaylistFolder(string $playlist_id, $user_id = 0)
+    {
+        $folder_id = $this->getFolderIdOfPlaylist($playlist_id);
+        if (!in_array($this->getUserAccessOnFolder($folder_id, $user_id), [self::ROLE_VIEWER, self::ROLE_CREATOR, self::ROLE_PUBLISHER])) {
+            $this->grantUserAccessToFolder($folder_id, self::ROLE_VIEWER, $user_id);
+        }
+    }
+
+    /**
+     * @param int $user_id
+     * @throws Exception
+     */
+    public function synchronizeCreatorPermissions($user_id = 0)
+    {
+        global $DIC;
+        $query = $DIC->database()->query(
+            'SELECT ref_id, xs.folder_ext_id ' .
+            'FROM object_reference r ' .
+            'INNER JOIN xpan_settings xs ON xs.obj_id = r.obj_id ' .
+            'WHERE r.deleted IS NULL'
+        );
+        $folder_ext_ids = [];
+        while ($res = $DIC->database()->fetchAssoc($query)) {
+            $ref_id = $res['ref_id'];
+            $folder_ext_ids[] = $res['folder_ext_id'] ?? $ref_id;
+        }
+        if (!empty($folder_ext_ids)) {
+            $folders = $this->getAllFoldersByExternalId($folder_ext_ids);
+            foreach ($folders as $folder) {
+                if ($folder && ($this->getUserAccessOnFolder($folder->getId(), $user_id) !== self::ROLE_CREATOR)) {
+                    $this->grantUserAccessToFolder($folder->getId(), self::ROLE_CREATOR, $user_id);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @return string
+     * @throws ilException
+     */
+    public function getFolderIdOfPlaylist(string $playlist_id) : string
+    {
+        return $this->rest_client->getFolderIdOfPlaylist($playlist_id);
     }
 
     /**
@@ -426,6 +504,8 @@ class xpanClient {
      */
     public function getUserAccessDetails($user_id = 0) {
         static $user_access_details;
+        global $DIC;
+        $user_id = $user_id ? $user_id : $DIC->user()->getId();
         if (!isset($user_access_details[$user_id])) {
             $guid = $this->getUserGuid($user_id);
             $this->log->write('*********');

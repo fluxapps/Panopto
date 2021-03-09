@@ -81,27 +81,60 @@ class xpanRESTClient
     /**
      * @param string $folder_id
      * @return Playlist[]
+     * @throws ilException
      */
     public function getPlaylistsOfFolder(string $folder_id) : array
     {
-        $url = $this->base_url . '/Panopto/api/v1/folders/' . $folder_id . '/playlists';
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token->getAccessToken()]);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($curl), true);
-        // TODO: error handling
+        $response = $this->get('/Panopto/api/v1/folders/' . $folder_id . '/playlists');
         return ContentObjectBuilder::buildPlaylistDTOsFromArray($response["Results"]);
     }
 
+    /**
+     * @param string $playlist_id
+     * @return array
+     * @throws ilException
+     */
     public function getSessionsOfPlaylist(string $playlist_id) : array
     {
-        $url = $this->base_url . '/Panopto/api/v1/playlists/' . $playlist_id . '/sessions';
+        $response = $this->get('/Panopto/api/v1/playlists/' . $playlist_id . '/sessions');
+        return ContentObjectBuilder::buildSessionDTOsFromArray($response['Results']);
+    }
+
+    /**
+     * @param string $playlist_id
+     * @return string
+     * @throws ilException
+     */
+    public function getFolderIdOfPlaylist(string $playlist_id) : string
+    {
+        $response = $this->get('/Panopto/api/v1/playlists/' . $playlist_id);
+        if (!isset($response['Folder']['Id'])) {
+            throw new ilException('Panopto REST: could not fetch folder id of playlist ' . $playlist_id);
+        }
+        return $response['Folder']['Id'];
+    }
+
+    /**
+     * @param string $relative_url
+     * @return array
+     * @throws ilException
+     */
+    private function get(string $relative_url) : array
+    {
+        $url = $this->base_url . $relative_url;
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $this->token->getAccessToken()]);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($curl), true);
-        return ContentObjectBuilder::buildSessionDTOsFromArray($response['Results']);
+        $response = curl_exec($curl);
+        if ($response === false) {
+            throw new ilException('Panopto REST: curl error nr: ' . curl_errno($curl) . ', message: ' . curl_error($curl));
+        }
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if ($http_status >= 300) {
+            $message = is_string($response) ? $response : (is_array($response) ? print_r($response, true) : '');
+            throw new ilException('Panopto REST: error response from Panopto server, status ' . $http_status . ', message: ' . $message);
+        }
+        return json_decode($response, true);
     }
 }
