@@ -64,11 +64,11 @@ Now, login to your ILIAS instance as an administrator. Navigate to "Administrati
     * **Application Key**: the key which appeared when creating the identity provider in Panopto
     * **User Identification**: chose which user field will be used as user identification (either the login or the external account)
 * **REST API**
-    * **API User**: the user created in the section [REST Client](#REST Client)
+    * **API User**: the user created in the section [REST Client](#rest-client)
     * **API Password**: the password for this user
-    * **Client Name**: name of REST Client created in the section [REST Client](#REST Client)
-    * **Client ID**: ID of REST Client created in the section [REST Client](#REST Client)
-    * **Client-Secret**: Secret of REST Client created in the section [REST Client](#REST Client)
+    * **Client Name**: name of REST Client created in the section [REST Client](#rest-client)
+    * **Client ID**: ID of REST Client created in the section [REST Client](#rest-client)
+    * **Client-Secret**: Secret of REST Client created in the section [REST Client](#rest-client)
 
 ## Authors
 

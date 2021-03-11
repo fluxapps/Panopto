@@ -6,7 +6,7 @@
 - Feature: copy objects (cloned objects show the same videos as the originals)
 - Feature: support playlists
 - Change: extended rest client for page editor plugin
-- **Breaking**: a REST client has to be configured to use the latest features. See: [README REST Client](./README.md#REST Client)
+- **Breaking**: a REST client has to be configured to use the latest features. See: [README REST Client](./README.md#rest-client)
 
 ## [1.4.0]
 * ILIAS 6 support
