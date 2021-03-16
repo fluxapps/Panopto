@@ -149,7 +149,7 @@ class xpanClient {
         $folder_ext_ids = [];
         while ($res = $DIC->database()->fetchAssoc($query)) {
             $ref_id = $res['ref_id'];
-            $folder_ext_ids[] = $res['folder_ext_id'] ?? $ref_id;
+            $folder_ext_ids[] = $res['folder_ext_id'] ?: $ref_id;
         }
         if (!empty($folder_ext_ids)) {
             $folders = $this->getAllFoldersByExternalId($folder_ext_ids);
@@ -449,7 +449,7 @@ class xpanClient {
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
         $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
-        $sessions = ContentObjectBuilder::buildSessionsDTOsFromSessions($sessions->getResults()->getSession());
+        $sessions = ContentObjectBuilder::buildSessionsDTOsFromSessions($sessions->getResults()->getSession() ?? []);
         $playlists = $this->rest_client->getPlaylistsOfFolder($folder_id);
         $objects = array_merge($sessions, $playlists);
         $objects = SorterEntry::generateSortedObjects($objects, $ref_id);

@@ -22,7 +22,7 @@ class ilObjPanopto extends ilObjectPlugin {
 
     public function getFolderExtId() : int
     {
-        return $this->getSettings()->getFolderExtId() ?? $this->getReferenceId();
+        return $this->getSettings()->getFolderExtId() ?: $this->getReferenceId();
     }
 
     public function getSettings() : xpanSettings
@@ -37,7 +37,7 @@ class ilObjPanopto extends ilObjectPlugin {
      */
     public function getReferenceId() : int
     {
-        return $this->getRefId() ?? self::_getAllReferences($this->getId())[0];
+        return $this->getRefId() ?: self::_getAllReferences($this->getId())[0];
     }
 
     /**
