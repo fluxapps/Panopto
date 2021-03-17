@@ -23,6 +23,8 @@ use Panopto\UserManagement\SyncExternalUser;
 use Panopto\UserManagement\User;
 use Panopto\UserManagement\UserManagement;
 use srag\Plugins\Panopto\DTO\ContentObjectBuilder;
+use Panopto\AccessManagement\SessionAccessDetails;
+use Panopto\SessionManagement\Pagination;
 
 /**
  * Class xpanClient
@@ -415,7 +417,7 @@ class xpanClient {
         $request = new ListSessionsRequest();
         $request->setFolderId($folder_id);
 
-        $pagination = new \Panopto\SessionManagement\Pagination();
+        $pagination = new Pagination();
         $pagination->setMaxNumberResults(999);
         $pagination->setPageNumber(0);
         $request->setPagination($pagination);
@@ -536,7 +538,7 @@ class xpanClient {
 
     /**
      * @param $session_id
-     * @return \Panopto\AccessManagement\SessionAccessDetails
+     * @return SessionAccessDetails
      * @throws Exception
      */
     public function getSessionAccessDetails($session_id) {

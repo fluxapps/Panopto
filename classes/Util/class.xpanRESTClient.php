@@ -67,6 +67,7 @@ class xpanRESTClient
     {
         $token = xpanConfig::getToken();
         if (!$token || $token->isExpired()) {
+            $this->log('fetch access token');
             $oauth2_token = $this->oauth2_provider->getAccessToken("password", [
                 "username" => xpanConfig::getConfig(xpanConfig::F_REST_API_USER),
                 "password" => xpanConfig::getConfig(xpanConfig::F_REST_API_PASSWORD),
@@ -121,6 +122,7 @@ class xpanRESTClient
      */
     private function get(string $relative_url) : array
     {
+        $this->log('GET ' . $relative_url);
         $url = $this->base_url . $relative_url;
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -136,5 +138,10 @@ class xpanRESTClient
             throw new ilException('Panopto REST: error response from Panopto server, status ' . $http_status . ', message: ' . $message);
         }
         return json_decode($response, true);
+    }
+
+    private function log(string $message)
+    {
+        $this->log->write('Panopto REST Client: ' . $message);
     }
 }
