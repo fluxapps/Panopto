@@ -154,7 +154,7 @@ class xpanClient {
             $folder_ext_ids[] = $res['folder_ext_id'] ?: $ref_id;
         }
         if (!empty($folder_ext_ids)) {
-            $folders = $this->getAllFoldersByExternalId($folder_ext_ids);
+            $folders = $this->getAllFoldersByExternalId(array_unique($folder_ext_ids));
             foreach ($folders as $folder) {
                 if ($folder && ($this->getUserAccessOnFolder($folder->getId(), $user_id) !== self::ROLE_CREATOR)) {
                     $this->grantUserAccessToFolder($folder->getId(), self::ROLE_CREATOR, $user_id);
