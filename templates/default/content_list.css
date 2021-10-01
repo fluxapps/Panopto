@@ -50,6 +50,15 @@ div.xpan_duration_container {
 	width: fit-content;
 }
 
+.xpan_playlist_icon {
+	position: absolute;
+	left: 9px;
+	top: 9px;
+	background-color:rgba(0, 0, 0, 0.5);
+	width: 35px;
+	height: 35px;
+}
+
 div.xpan_duration {
 	width: fit-content;
 	color: white;

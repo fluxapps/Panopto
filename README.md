@@ -1,9 +1,9 @@
 Panopto
 ==========
-### Description
+## Description
 This plugin can be installed in the LMS ILIAS to implement an interface to the external video platform Panopto. It introduces a new repository object type, in which video from Panopto can be added and viewed, as well as new videos can be recorded and  uploaded directly to Panopto.
 
-### Installation
+## Installation
 Start at your ILIAS root directory
 ```bash
 mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
@@ -11,9 +11,12 @@ cd Customizing/global/plugins/Services/Repository/RepositoryObject
 git clone https://github.com/studer-raimann/Panopto.git
 ```
 
-### Configuration
-##### Panopto
-Login to your Panopto instance as administrator. Navigate to "System" -> "Identity Providers" and add a new provider. Enter the following data:
+## Configuration
+### Panopto
+Login to your Panopto instance as administrator. 
+
+#### Identity Provider
+Navigate to "System" -> "Identity Providers" and add a new provider. Enter the following data:
 * **Provider Type**: *BLTI*
 * **Instance Name**: choose an identifier, e.g: "*ilias.myinstitution*" (will be needed in the plugin configuration)
 * **Friendly Description**:	choose any description
@@ -37,24 +40,48 @@ Now, to create an api user:
 
 After the user is created, open the user details by clicking on the user's name. Check the role "Administrator" under "Info" -> "System Roles" and click "Update Roles".
 
-##### ILIAS
-Now, login to your ILIAS instance as an administrator. Navigate to "Administration" -> "Plugins" and look for the "Panopto" plugin. Install/Update the plugin if it's not up-to-date yet and afterwards choose "Configure". Configure the plugin as followed:
-* **Object Title**: choose how this object type should be named in ILIAS (displayed e.g. when creating a new object in the repository)
-* **API user**: enter the name of the previously created API user (e.g. "api_user")
-* **Hostname**: the hostname of your Panopto instance without "https://". E.g. "demo.panopto.com"
-* **Instance Name**: the same identifier you chose when creating the identity provider in Panopto
-* **Application Key**: the key which appeared when creating the identity provider in Panopto
-* **User Identification**: chose which user field will be used as user identification (either the login or the external account)
+##### REST Client
+Navigate to "System" -> "API Clients" and add a new client. Enter a Client Name of your choice and select the Client Type "User Based Server Application". All other fields can be left empty. Write down the Client Name, Client ID and Client Secret for later.
 
-### Adjustment suggestions
-* Adjustment suggestions by pull requests
-* Adjustment suggestions which are not yet worked out in detail by Jira tasks under https://jira.studer-raimann.ch/projects/PLPAN
-* Bug reports under https://jira.studer-raimann.ch/projects/PLPAN
-* For external users you can report it at https://plugins.studer-raimann.ch/goto.php?target=uihk_srsu_PLPAN
+Unfortunately, the previously created api user can not be used for the REST api, as it has to be an internal user. So create another user:
+* Navigate to "System" -> "Users"
+* Click on "New"
+* Fill out the form as follows:
+    * enter the required fields 
+    * write down the username and password for later
+    * uncheck the Options "Email user when recorded..." and "Create a personal folder..."
+* Create the user
+
+#### ILIAS
+
+Now, login to your ILIAS instance as an administrator. Navigate to "Administration" -> "Plugins" and look for the "Panopto" plugin. Install/Update the plugin if it's not up-to-date yet and afterwards choose "Configure". Configure the plugin as followed:
+* **General**
+    * **Object Title**: choose how this object type should be named in ILIAS (displayed e.g. when creating a new object in the repository)
+* **SOAP API**
+    * **API user**: enter the name of the previously created API user (e.g. "api_user")
+    * **Hostname**: the hostname of your Panopto instance without "https://". E.g. "demo.panopto.com"
+    * **Instance Name**: the same identifier you chose when creating the identity provider in Panopto
+    * **Application Key**: the key which appeared when creating the identity provider in Panopto
+    * **User Identification**: chose which user field will be used as user identification (either the login or the external account)
+* **REST API**
+    * **API User**: the user created in the section [REST Client](#rest-client)
+    * **API Password**: the password for this user
+    * **Client Name**: name of REST Client created in the section [REST Client](#rest-client)
+    * **Client ID**: ID of REST Client created in the section [REST Client](#rest-client)
+    * **Client-Secret**: Secret of REST Client created in the section [REST Client](#rest-client)
+
+## Authors
+
+This is an OpenSource project by studer + raimann ag (https://studer-raimann.ch)
+
+## License
+
+This project is licensed under the GPL v3 License
 
 ### ILIAS Plugin SLA
-Wir lieben und leben die Philosophie von Open Source Software! Die meisten unserer Entwicklungen, welche wir im Kundenauftrag oder in Eigenleistung entwickeln, stellen wir öffentlich allen Interessierten kostenlos unter https://github.com/studer-raimann zur Verfügung.
 
-Setzen Sie eines unserer Plugins professionell ein? Sichern Sie sich mittels SLA die termingerechte Verfügbarkeit dieses Plugins auch für die kommenden ILIAS Versionen. Informieren Sie sich hierzu unter https://studer-raimann.ch/produkte/ilias-plugins/plugin-sla.
+We love and live the philosophy of Open Source Software! Most of our developments, which we develop on behalf of customers or on our own account, are publicly available free of charge to all interested parties at https://github.com/studer-raimann.
 
-Bitte beachten Sie, dass wir nur Institutionen, welche ein SLA abschliessen Unterstützung und Release-Pflege garantieren.
+Do you use one of our plugins professionally? Secure the timely availability of this plugin for the upcoming ILIAS versions via SLA. Please inform yourself under https://studer-raimann.ch/produkte/ilias-plugins/plugin-sla.
+
+Please note that we only guarantee support and release maintenance for institutions that sign a SLA.

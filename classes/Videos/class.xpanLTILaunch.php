@@ -9,11 +9,13 @@ use League\OAuth1\Client as OAuth1;
  */
 class xpanLTILaunch {
 
-	/**
-	 * @return string
-	 * @throws Exception
-	 */
-	public static function launch() {
+    /**
+     * @param ilObjPanopto $panopto_object
+     * @return string
+     * @throws Exception
+     */
+	public static function launch(\ilObjPanopto $panopto_object) : string
+    {
         global $DIC;
 
         # Load config
@@ -24,15 +26,15 @@ class xpanLTILaunch {
         $launch_data = array(
             "user_id" => xpanUtil::getUserIdentifier(),
             "roles" => "Instructor",
-            "resource_link_id" => $_GET['ref_id'],
-            "resource_link_title" => xpanUtil::getExternalIdOfObjectById(),
+            "resource_link_id" => $panopto_object->getFolderExtId(),
+            "resource_link_title" => xpanUtil::getExternalIdOfObjectById($panopto_object->getFolderExtId()),
             "lis_person_name_full" => $DIC->user()->getFullname(),
             "lis_person_name_family" => $DIC->user()->getLastname(),
             "lis_person_name_given" => $DIC->user()->getFirstname(),
             "lis_person_contact_email_primary" => $DIC->user()->getEmail(),
-            "context_id" => $_GET['ref_id'],
-            "context_title" => xpanUtil::getExternalIdOfObjectById(),
-            "context_label" => "urn:lti:context-type:ilias/Object_" . $_GET['ref_id'],
+            "context_id" => $panopto_object->getFolderExtId(),
+            "context_title" => xpanUtil::getExternalIdOfObjectById($panopto_object->getFolderExtId()),
+            "context_label" => "urn:lti:context-type:ilias/Object_" . $panopto_object->getFolderExtId(),
             "context_type" => "urn:lti:context-type:ilias/Object",
             'launch_presentation_locale' => 'de',
             'launch_presentation_document_target' => 'iframe',

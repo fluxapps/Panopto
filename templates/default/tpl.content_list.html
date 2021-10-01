@@ -10,13 +10,18 @@
 	<!-- END next_top -->
 </div>
 <!-- BEGIN list_item -->
-<a onclick="Panopto.playVideo('{SID}');">
-	<div class="box" id="box_{SID}">
+<a onclick="Panopto.playVideo('{ID}', {IS_PLAYLIST});">
+	<div class="box" id="box_{ID}">
 		<div class="xpan_image_container">
-			<img width="312px" height="175px" id="xpan_thumbnail_{SID}" class="xpan_preview_image" src="{THUMBNAIL}" onerror="this.src='./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/templates/images/Panopto.jpg'">
+			<img width="312px" height="175px" id="xpan_thumbnail_{ID}" class="xpan_preview_image" src="{THUMBNAIL}" onerror="this.src='./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/templates/images/Panopto.jpg'">
+			<!-- BEGIN playlist_icon -->
+			<img class="xpan_playlist_icon" src="./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/templates/images/list.svg"/>
+			<!-- END playlist_icon -->
+			<!-- BEGIN duration -->
 			<div class="xpan_duration_container">
 				<div class="xpan_duration">{DURATION}</div>
 			</div>
+			<!-- END duration -->
 			<div class="xpan_play_overlay">
 				<div class="xpan_pseudo_element"></div> <!-- this is necessary to center the following image -->
 				<img class="xpan_play_icon" width="32px" height="32px" src="./Customizing/global/plugins/Services/Repository/RepositoryObject/Panopto/templates/images/play.svg">

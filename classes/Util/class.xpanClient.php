@@ -10,7 +10,6 @@ use Panopto\AccessManagement\GrantUsersAccessToFolder;
 use Panopto\AccessManagement\GrantUsersViewerAccessToSession;
 use Panopto\AccessManagement\UserAccessDetails;
 use Panopto\Client as PanoptoClient;
-use Panopto\RemoteRecorderManagement\Pagination;
 use Panopto\SessionManagement\ArrayOfSessionState;
 use Panopto\SessionManagement\Folder;
 use Panopto\SessionManagement\GetAllFoldersByExternalId;
@@ -23,6 +22,9 @@ use Panopto\UserManagement\GetUserByKey;
 use Panopto\UserManagement\SyncExternalUser;
 use Panopto\UserManagement\User;
 use Panopto\UserManagement\UserManagement;
+use srag\Plugins\Panopto\DTO\ContentObjectBuilder;
+use Panopto\AccessManagement\SessionAccessDetails;
+use Panopto\SessionManagement\Pagination;
 
 /**
  * Class xpanClient
@@ -37,13 +39,13 @@ class xpanClient {
 	const ROLE_PUBLISHER = AccessRole::Publisher;
 
     /**
-     * @var xpanClient
+     * @var self
      */
     protected static $instance;
 
 
     /**
-     * @return xpanClient
+     * @return self
      */
     public static function getInstance() {
         if (!isset(self::$instance)) {
@@ -63,6 +65,10 @@ class xpanClient {
      */
     protected $auth;
     /**
+     * @var xpanRESTClient
+     */
+    protected $rest_client;
+    /**
      * @var xpanLog
      */
     protected $log;
@@ -77,6 +83,94 @@ class xpanClient {
         $this->panoptoclient = new PanoptoClient(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), array('trace' => 1, 'stream_context' => stream_context_create($arrContextOptions)));
         $this->panoptoclient->setAuthenticationInfo(xpanUtil::getApiUserKey(), '', xpanConfig::getConfig(xpanConfig::F_APPLICATION_KEY));
         $this->auth = $this->panoptoclient->getAuthenticationInfo();
+        $this->rest_client = xpanRESTClient::getInstance();
+    }
+
+    /**
+     * @param string $playlist_id
+     * @return \srag\Plugins\Panopto\DTO\Session[]
+     * @throws ilException
+     */
+    public function getSessionsOfPlaylist(string $playlist_id) : array
+    {
+        return $this->rest_client->getSessionsOfPlaylist($playlist_id);
+    }
+
+    /**
+     * @param string $session_id
+     * @param int    $user_id
+     * @throws Exception
+     */
+    public function grantViewerAccessToSession(string $session_id, $user_id = 0)
+    {
+        if (!$this->hasUserViewerAccessOnSession($session_id, $user_id)) {
+            $this->grantUserViewerAccessToSession($session_id, $user_id);
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @param int    $user_id
+     * @throws ilException
+     */
+    public function grantViewerAccessToPlaylistSessions(string $playlist_id, $user_id = 0)
+    {
+        foreach ($this->getSessionsOfPlaylist($playlist_id) as $session) {
+            if (!$this->hasUserViewerAccessOnSession($session->getId())) {
+                $this->grantViewerAccessToSession($session->getId());
+            }
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @param int    $user_id
+     * @throws ilException
+     */
+    public function grantViewerAccessToPlaylistFolder(string $playlist_id, $user_id = 0)
+    {
+        $folder_id = $this->getFolderIdOfPlaylist($playlist_id);
+        if (!in_array($this->getUserAccessOnFolder($folder_id, $user_id), [self::ROLE_VIEWER, self::ROLE_CREATOR, self::ROLE_PUBLISHER])) {
+            $this->grantUserAccessToFolder($folder_id, self::ROLE_VIEWER, $user_id);
+        }
+    }
+
+    /**
+     * @param int $user_id
+     * @throws Exception
+     */
+    public function synchronizeCreatorPermissions($user_id = 0)
+    {
+        global $DIC;
+        $query = $DIC->database()->query(
+            'SELECT ref_id, xs.folder_ext_id ' .
+            'FROM object_reference r ' .
+            'INNER JOIN xpan_settings xs ON xs.obj_id = r.obj_id ' .
+            'WHERE r.deleted IS NULL'
+        );
+        $folder_ext_ids = [];
+        while ($res = $DIC->database()->fetchAssoc($query)) {
+            $ref_id = $res['ref_id'];
+            $folder_ext_ids[] = $res['folder_ext_id'] ?: $ref_id;
+        }
+        if (!empty($folder_ext_ids)) {
+            $folders = $this->getAllFoldersByExternalId(array_unique($folder_ext_ids));
+            foreach ($folders as $folder) {
+                if ($folder && ($this->getUserAccessOnFolder($folder->getId(), $user_id) !== self::ROLE_CREATOR)) {
+                    $this->grantUserAccessToFolder($folder->getId(), self::ROLE_CREATOR, $user_id);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $playlist_id
+     * @return string
+     * @throws ilException
+     */
+    public function getFolderIdOfPlaylist(string $playlist_id) : string
+    {
+        return $this->rest_client->getFolderIdOfPlaylist($playlist_id);
     }
 
     /**
@@ -117,7 +211,8 @@ class xpanClient {
      * @throws Exception
      */
     public function getFolderByExternalId($ext_id) {
-        return array_shift($this->getAllFoldersByExternalId(array($ext_id)));
+        $folders = $this->getAllFoldersByExternalId(array($ext_id));
+        return array_shift($folders);
     }
 
     /**
@@ -308,22 +403,21 @@ class xpanClient {
         $this->grantUsersViewerAccessToSession(array($user_id), $session_id);
     }
 
-
     /**
      * @param      $folder_id
      * @param bool $page_limit Only returns a specific page if true, otherwise everything
      * @param int  $page
-     *
+     * @param int  $ref_id
      * @return mixed
      * @throws Exception
      */
-    public function getSessionsOfFolder($folder_id, $page_limit = false, $page = 0)
+    public function getContentObjectsOfFolder($folder_id, $page_limit = false, $page = 0, int $ref_id = 0) : array
     {
         $perpage = 10;
         $request = new ListSessionsRequest();
         $request->setFolderId($folder_id);
 
-        $pagination = new \Panopto\SessionManagement\Pagination();
+        $pagination = new Pagination();
         $pagination->setMaxNumberResults(999);
         $pagination->setPageNumber(0);
         $request->setPagination($pagination);
@@ -357,17 +451,19 @@ class xpanClient {
         $this->log->write('Status: ' . substr($session_client->__last_response_headers, 0, strpos($session_client->__last_response_headers, "\r\n")));
         $this->log->write('Received ' . $sessions->getTotalNumberResults() . ' object(s).');
 
-        $array_sessions = array('count' => $sessions->getTotalNumberResults(), 'sessions' => $sessions->getResults()->getSession());
-        $sorted_sessions = SorterEntry::generateSortedSessions($array_sessions);
+        $sessions = ContentObjectBuilder::buildSessionsDTOsFromSessions($sessions->getResults()->getSession() ?? []);
+        $playlists = $this->rest_client->getPlaylistsOfFolder($folder_id);
+        $objects = array_merge($sessions, $playlists);
+        $objects = SorterEntry::generateSortedObjects($objects, $ref_id);
 
         if ($page_limit) {
             // Implement manual pagination
             return array(
-                "count"    => count($sorted_sessions["sessions"]),
-                "sessions" => array_slice($sorted_sessions["sessions"], $page * $perpage, $perpage),
+                "count"    => count($objects),
+                "objects" => array_slice($objects, $page * $perpage, $perpage),
             );
         } else {
-            return $sorted_sessions;
+            return $objects;
         }
 
     }
@@ -410,6 +506,8 @@ class xpanClient {
      */
     public function getUserAccessDetails($user_id = 0) {
         static $user_access_details;
+        global $DIC;
+        $user_id = $user_id ? $user_id : $DIC->user()->getId();
         if (!isset($user_access_details[$user_id])) {
             $guid = $this->getUserGuid($user_id);
             $this->log->write('*********');
@@ -440,7 +538,7 @@ class xpanClient {
 
     /**
      * @param $session_id
-     * @return \Panopto\AccessManagement\SessionAccessDetails
+     * @return SessionAccessDetails
      * @throws Exception
      */
     public function getSessionAccessDetails($session_id) {

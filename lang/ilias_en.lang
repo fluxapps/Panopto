@@ -1,9 +1,7 @@
 conf_object_title#:#Object Title
 conf_object_title_info#:#Displayed name of Panopto objects in the repository
 conf_api_user#:#API User
-conf_api_user_info#:#Panopto user which will be used to communicate with Panopto (must have enough permissions).
-conf_api_password#:#API Password
-conf_api_password_info#:#The API user's password
+conf_api_user_info#:#Panopto user which will be used to communicate with the Panopto SOAP API (must have enough permissions).
 conf_hostname#:#Hostname
 conf_hostname_info#:#Without http(s)://, e.g. demo.panopto.com
 conf_instance_name#:#Instance Name
@@ -15,6 +13,19 @@ conf_user_id_info#:#Defines which user field is sent to Panopto as user identifi
 conf_login#:#Login
 conf_external_account#:#External Account
 conf_email#:#Email
+conf_header_general#:#General
+conf_header_soap#:#SOAP API
+conf_header_rest#:#REST API
+conf_rest_api_user#:#API User
+conf_rest_api_user_info#:#Panopto user which will be used to communicate with the Panopto REST API (must have enough permissions).
+conf_rest_api_password#:#API Password
+conf_rest_api_password_info#:#The API user's password
+conf_rest_client_name#:#Client Name
+conf_rest_client_name_id#:#Is configure in Panopto under 'API Clients'
+conf_rest_client_id#:#Client ID
+conf_rest_client_id_info#:#Is configure in Panopto under 'API Clients'
+conf_rest_client_secret#:#Client-Secret
+conf_rest_client_secret_info#:#Is configure in Panopto under 'API Clients'
 msg_no_videos#:#There are no videos yet.
 msg_success#:#Changes saved successfully.
 tab_videos#:#Videos
@@ -40,3 +51,5 @@ content_sorting#:#Sorting
 content_thumbnail#:#Thumbnail
 content_title#:#Title
 content_description#:#Description
+obj_xpan#:#Panopto
+objs_xpan#:#Panoptos

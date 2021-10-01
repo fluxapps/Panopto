@@ -1,4 +1,7 @@
 <?php
+
+use srag\Plugins\Panopto\DTO\ContentObject;
+
 require_once __DIR__ . "/../../vendor/autoload.php";
 
 /**
@@ -34,7 +37,7 @@ class xpanContentGUI extends xpanGUI {
 
         $this->client = xpanClient::getInstance();
 
-        $folder = $this->client->getFolderByExternalId($_GET['ref_id']);
+        $folder = $this->client->getFolderByExternalId($this->getObject()->getFolderExtId());
         if (!$folder) {
             throw new ilException('No external folder found for this object.');
         }
@@ -52,15 +55,19 @@ class xpanContentGUI extends xpanGUI {
      */
     protected function index() {
         $this->addSubTabs(self::TAB_SUB_SHOW);
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id, true, $_GET['xpan_page']);
-
-        if (!$sessions['count']) {
+        $content_objects = $this->client->getContentObjectsOfFolder(
+            $this->folder_id,
+            true,
+            $_GET['xpan_page'],
+            $this->getObject()->getReferenceId());
+//        xpanRESTClient::getInstance()->getPlaylistsOfFolder($this->folder_id);
+        if (!$content_objects['count']) {
             ilUtil::sendInfo($this->pl->txt('msg_no_videos'));
             return;
         }
 
         $tpl = new ilTemplate('tpl.content_list.html', true, true, $this->pl->getDirectory());
-        $pages = 1 + floor($sessions['count'] / 10);
+        $pages = 1 + floor($content_objects['count'] / 10);
 
         // "previous" button
         if ($_GET['xpan_page']) {
@@ -101,7 +108,7 @@ class xpanContentGUI extends xpanGUI {
         }
 
         // "next" button
-        if ($sessions['count'] > (($_GET['xpan_page'] + 1)*10)) {
+        if ($content_objects['count'] > (($_GET['xpan_page'] + 1)*10)) {
             $this->ctrl->setParameter($this, 'xpan_page', $_GET['xpan_page'] + 1);
             $link = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
             // top
@@ -115,17 +122,27 @@ class xpanContentGUI extends xpanGUI {
         }
 
         // videos
-        foreach ($sessions['sessions'] as $session) {
+        /** @var ContentObject $object */
+        foreach ($content_objects['objects'] as $object) {
+            if ($object instanceof \srag\Plugins\Panopto\DTO\Session) {
+                $tpl->setCurrentBlock('duration');
+                $tpl->setVariable('DURATION', $this->formatDuration($object->getDuration()));
+                $tpl->parseCurrentBlock();
+                $tpl->setVariable('IS_PLAYLIST', 'false');
+            } else {
+                $tpl->setVariable('IS_PLAYLIST', 'true');
+                $tpl->touchBlock('playlist_icon');
+            }
+
             $tpl->setCurrentBlock('list_item');
-            $tpl->setVariable('SID', $session->getId());
-            $tpl->setVariable('THUMBNAIL', 'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl());
-            $tpl->setVariable('TITLE', $session->getName());
-            $tpl->setVariable('DESCRIPTION', $session->getDescription());
-            $tpl->setVariable('DURATION', $this->formatDuration($session->getDuration()));
+            $tpl->setVariable('ID', $object->getId());
+            $tpl->setVariable('THUMBNAIL', $object->getThumbnailUrl());
+            $tpl->setVariable('TITLE', $object->getTitle());
+            $tpl->setVariable('DESCRIPTION', $object->getDescription());
             $tpl->parseCurrentBlock();
         }
 
-        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css');
+        $this->tpl->addCss($this->pl->getDirectory() . '/templates/default/content_list.css?2');
         $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/Panopto.js');
         $this->tpl->addOnLoadCode('Panopto.base_url = "https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . '";');
         $this->tpl->setContent($tpl->get() . $this->getModalPlayer());
@@ -136,8 +153,8 @@ class xpanContentGUI extends xpanGUI {
     {
         $this->addSubTabs(self::TAB_SUB_SORTING);
 
-        $sessions = $this->client->getSessionsOfFolder($this->folder_id);
-        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $sessions);
+        $objects = $this->client->getContentObjectsOfFolder($this->folder_id, false, 0, $this->getObject()->getReferenceId());
+        $sort_table_gui = new xpanSortingTableGUI($this, $this->pl, $objects);
         $this->tpl->setContent($sort_table_gui->getHTML());
     }
 
@@ -195,29 +212,36 @@ class xpanContentGUI extends xpanGUI {
      */
     public function reorder()
     {
-        $ids = $_POST['ids'];
-        $precedence = 1;
+        global $DIC;
+        $atom_query = new ilAtomQueryLock($DIC->database());
+        $atom_query->addTableLock(SorterEntry::TABLE_NAME);
+        $atom_query->addTableLock(SorterEntry::TABLE_NAME . '_seq');
+        $atom_query->addQueryCallable(function(ilDBInterface $db) {
+            $ids = $_POST['ids'];
+            $precedence = 1;
 
-        $previousEntry = SorterEntry::where(array("ref_id" => $this->parent_gui->ref_id))->first();
+            $existingEntries = SorterEntry::where(["ref_id" => $this->getObject()->getReferenceId()]);
 
-        // Delete previous entries
-        if (!is_null($previousEntry)) {
-            foreach (SorterEntry::get() as $entry) {
-                $entry->delete();
+            // Delete previous entries
+            if ($existingEntries->hasSets()) {
+                foreach ($existingEntries->get() as $entry) {
+                    $entry->delete();
+                }
             }
-        }
 
-        foreach ($ids as $id) {
-            $entry = new SorterEntry();
-            $entry->setRefId($this->parent_gui->ref_id);
-            $entry->setPrecedence($precedence);
-            $entry->setSessionId($id);
-            $entry->create();
-            $precedence++;
-        }
+            foreach ($ids as $id) {
+                $entry = new SorterEntry();
+                $entry->setRefId($this->getObject()->getReferenceId());
+                $entry->setPrecedence($precedence);
+                $entry->setObjectId($id);
+                $entry->create();
+                $precedence++;
+            }
 
-        echo "{\"success\": true}";
-        exit;
+            echo "{\"success\": true}";
+            exit;
+        });
+        $atom_query->run();
     }
 
 }

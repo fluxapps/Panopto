@@ -1,4 +1,7 @@
 <?php
+
+use srag\Plugins\Panopto\DTO\ContentObject;
+
 require_once __DIR__ . "/../../vendor/autoload.php";
 
 /**
@@ -121,58 +124,54 @@ class SorterEntry extends ActiveRecord
     /**
      * @return string
      */
-    public function getSessionId() : string
+    public function getObjectId() : string
     {
         return $this->session_id;
     }
 
 
     /**
-     * @param string $session_id
+     * @param string $object_id
      */
-    public function setSessionId(string $session_id)
+    public function setObjectId(string $object_id)
     {
-        $this->session_id = $session_id;
+        $this->session_id = $object_id;
     }
 
-
     /**
-     * @param array $sessions
-     *
+     * @param ContentObject[] $objects
+     * @param int   $ref_id
      * @return array
+     * @throws Exception
      */
-    public static function generateSortedSessions($sessions)
+    public static function generateSortedObjects(array $objects, int $ref_id = 0) : array
     {
-        $sorted = [
-            "count"    => $sessions["count"],
-            "sessions" => [],
-        ];
-
-        if ($sessions["count"] > 0) {
+        $sorted = [];
+        if (count($objects) > 0) {
             $entries = SorterEntry::orderBy("precedence");
 
             /* @var $entry SorterEntry */
-            foreach ($entries->get() as $entry) {
-                $session = null;
-                foreach ($sessions["sessions"] as $sessionEntry) {
-                    if ($sessionEntry->getId() === $entry->getSessionId()) {
-                        $session = $sessionEntry;
+            foreach (($ref_id > 0 ? $entries->where(['ref_id' => $ref_id])->get() : $entries->get()) as $entry) {
+                $content_object = null;
+                foreach ($objects as $object) {
+                    if ($object->getId() === $entry->getObjectId()) {
+                        $content_object = $object;
                     }
                 }
 
-                if (!is_null($session)) {
-                    array_push($sorted["sessions"], $session);
+                if (!is_null($content_object)) {
+                    array_push($sorted, $content_object);
                 }
             }
 
-            $diff = array_udiff($sessions["sessions"], $sorted["sessions"],
+            $diff = array_udiff($objects, $sorted,
                 function ($obj_a, $obj_b) {
                     return strcmp($obj_a->getId(), $obj_b->getId());
                 }
             );
 
-            foreach ($diff as $session) {
-                array_push($sorted["sessions"], $session);
+            foreach ($diff as $content_object) {
+                array_push($sorted, $content_object);
             }
         }
 

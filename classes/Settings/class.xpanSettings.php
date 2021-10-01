@@ -34,11 +34,20 @@ class xpanSettings extends ActiveRecord {
      * @db_length           1
      */
     protected $is_online = 0;
+    /**
+     * @var int
+     *
+     * @db_has_field        true
+     * @db_fieldtype        integer
+     * @db_length           8
+     */
+    protected $folder_ext_id;
 
     /**
      * @return int
      */
-    public function getObjId() {
+    public function getObjId() : int
+    {
         return $this->obj_id;
     }
 
@@ -52,7 +61,8 @@ class xpanSettings extends ActiveRecord {
     /**
      * @return int
      */
-    public function isOnline() {
+    public function isOnline() : int
+    {
         return $this->is_online;
     }
 
@@ -63,6 +73,19 @@ class xpanSettings extends ActiveRecord {
         $this->is_online = $is_online;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getFolderExtId()
+    {
+        return $this->folder_ext_id;
+    }
 
-
+    /**
+     * @param int $folder_ext_id
+     */
+    public function setFolderExtId(int $folder_ext_id)
+    {
+        $this->folder_ext_id = $folder_ext_id;
+    }
 }

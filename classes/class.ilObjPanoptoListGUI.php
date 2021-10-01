@@ -20,7 +20,7 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
         $this->info_screen_enabled = true;
         $this->delete_enabled = true;
         $this->cut_enabled = false;
-        $this->copy_enabled = false;
+        $this->copy_enabled = true;
 
         $commands = [
             [
@@ -32,7 +32,6 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
 
         return $commands;
     }
-
     /**
      * @return string
      */
@@ -83,4 +82,5 @@ class ilObjPanoptoListGUI extends ilObjectPluginListGUI {
 
         return $props;
     }
+
 }

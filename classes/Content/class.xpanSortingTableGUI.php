@@ -1,5 +1,7 @@
 <?php
 
+use srag\Plugins\Panopto\DTO\ContentObject;
+
 /**
  * Class xpanTableGUI
  *
@@ -12,24 +14,21 @@ class xpanSortingTableGUI extends ilTable2GUI
     const TBL_ROW_TEMPLATE_DIR = "/templates/table_rows/";
     const JS_FILES_TO_EMBED
         = [
-            "/js/xoctWaiter.js",
-            "/js/sortable.js",
+            "/js/sortable.min.js?2",
         ];
     const CSS_FILES_TO_EMBED
         = [
-            "/templates/default/xoctWaiter.css",
             "/templates/default/sorting_table.css",
         ];
 
 
     /**
      * xpanTableGUI constructor.
-     *
      * @param                 $a_parent_obj
      * @param ilPanoptoPlugin $pl
-     * @param                 $sessions
+     * @param ContentObject[] $content_objects
      */
-    public function __construct($a_parent_obj, $pl, $sessions)
+    public function __construct($a_parent_obj, $pl, $content_objects)
     {
         parent::__construct($a_parent_obj);
         $plugin_dir = $pl->getDirectory();
@@ -42,7 +41,7 @@ class xpanSortingTableGUI extends ilTable2GUI
         $this->setShowRowsSelector(true);
 
         $this->applyFiles($plugin_dir);
-        $this->parseData($sessions);
+        $this->parseData($content_objects);
     }
 
 
@@ -57,15 +56,15 @@ class xpanSortingTableGUI extends ilTable2GUI
         $this->addColumn($pl->txt('content_description'));
     }
 
-
-    protected function fillRow($session)
+    /**
+     * @param ContentObject $content_object
+     */
+    protected function fillRow($content_object)
     {
-        $this->tpl->setVariable("VAL_THUMBNAIL",
-            'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl()
-        );
-        $this->tpl->setVariable("VAL_TITLE", $session->getName());
-        $this->tpl->setVariable("VAL_DESCRIPTION", $session->getDescription());
-        $this->tpl->setVariable("VAL_MID", $session->getId());
+        $this->tpl->setVariable("VAL_THUMBNAIL", $content_object->getThumbnailUrl());
+        $this->tpl->setVariable("VAL_TITLE", $content_object->getTitle());
+        $this->tpl->setVariable("VAL_DESCRIPTION", $content_object->getDescription());
+        $this->tpl->setVariable("VAL_MID", $content_object->getId());
     }
 
 
@@ -87,12 +86,13 @@ class xpanSortingTableGUI extends ilTable2GUI
 
         $base_link = $this->ctrl->getLinkTarget($this->parent_obj, '', '', true);
         $main_tpl->addOnLoadCode('PanoptoSorter.init("' . $base_link . '");');
-        $main_tpl->addOnLoadCode('xoctWaiter.init("waiter");');
     }
 
-
-    protected function parseData($sessions)
+    /**
+     * @param ContentObject[] $content_objects
+     */
+    protected function parseData(array $content_objects)
     {
-        $this->setData($sessions["sessions"]);
+        $this->setData($content_objects);
     }
 }
