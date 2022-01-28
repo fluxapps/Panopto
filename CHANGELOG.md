@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.6.1]
+* Fix: fixed bug for host urls starting with letters h,t,p,s
+
 ## [1.6.0]
 * ILIAS 7 support
 * Remove ILIAS 5.4 support
