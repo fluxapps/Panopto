@@ -52,7 +52,11 @@ class xpanRESTClient
     public function __construct()
     {
         $this->log = xpanLog::getInstance();
-        $this->base_url = 'https://' . rtrim(ltrim(xpanConfig::getConfig(xpanConfig::F_HOSTNAME), "https://"), '/');
+        $host = xpanConfig::getConfig(xpanConfig::F_HOSTNAME);
+        if (strpos($host, 'https://') === 0) {
+            $host = substr($host, 8);
+        }
+        $this->base_url = 'https://' . rtrim($host, '/');
         $this->oauth2_provider = new OAuth2Provider(array(
             'clientId' => xpanConfig::getConfig(xpanConfig::F_REST_CLIENT_ID),
             'clientSecret' => xpanConfig::getConfig(xpanConfig::F_REST_CLIENT_SECRET),
