@@ -8,7 +8,7 @@ Start at your ILIAS root directory
 ```bash
 mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
 cd Customizing/global/plugins/Services/Repository/RepositoryObject
-git clone https://github.com/studer-raimann/Panopto.git
+git clone https://github.com/fluxapps/Panopto.git
 ```
 
 ## Configuration
@@ -72,16 +72,22 @@ Now, login to your ILIAS instance as an administrator. Navigate to "Administrati
 
 ## Authors
 
-This is an OpenSource project by studer + raimann ag (https://studer-raimann.ch)
+This is an OpenSource project by studer + raimann ag (https://fluxlabs.ch)
 
 ## License
 
 This project is licensed under the GPL v3 License
 
-### ILIAS Plugin SLA
+## Contributing :purple_heart:
+Please ...
+1. ... register an account at https://git.fluxlabs.ch
+2. ... write us an email: support@fluxlabs.ch
+3. ... we give you access to the projects you like to contribute :fire:
 
-We love and live the philosophy of Open Source Software! Most of our developments, which we develop on behalf of customers or on our own account, are publicly available free of charge to all interested parties at https://github.com/studer-raimann.
 
-Do you use one of our plugins professionally? Secure the timely availability of this plugin for the upcoming ILIAS versions via SLA. Please inform yourself under https://studer-raimann.ch/produkte/ilias-plugins/plugin-sla.
+## Adjustment suggestions / bug reporting :feet:
+Please ...
+1. ... register an account at https://git.fluxlabs.ch
+2. ... ask us for a sla: support@fluxlabs.ch :kissing_heart:
+3. ... we will give you the access with the possibility to read and create issues or to discuss feature requests with us.
 
-Please note that we only guarantee support and release maintenance for institutions that sign a SLA.
