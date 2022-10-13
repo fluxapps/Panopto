@@ -37,7 +37,8 @@ class ContentObjectBuilder
                 $session->getId(),
                 $session->getName(),
                 $session->getDescription() ?? '',
-                'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl(),
+         //       'https://' . xpanConfig::getConfig(xpanConfig::F_HOSTNAME) . $session->getThumbUrl(),
+                $session->getThumbUrl(),
                 $session->getDuration());
         }
         return $sessions_array;
