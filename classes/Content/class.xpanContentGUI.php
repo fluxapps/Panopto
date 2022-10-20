@@ -238,8 +238,8 @@ class xpanContentGUI extends xpanGUI {
                 $precedence++;
             }
 
-            echo "{\"success\": true}";
-            exit;
+            //echo "{\"success\": true}";
+            //exit;
         });
         $atom_query->run();
     }
