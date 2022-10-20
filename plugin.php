@@ -1,6 +1,6 @@
 <?php
 $id = 'xpan';
-$version = '1.6.2';
+$version = '1.6.3';
 $ilias_min_version = '6.0';
 $ilias_max_version = '7.999';
 $responsible = 'Theodor Truffer';
