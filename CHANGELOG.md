@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.6.3]
+* FIX: https://github.com/fluxapps/Panopto/issues/8
+
 ## [1.6.2]
 * Fix: fixed bug "Problems with special characters in names" https://github.com/fluxapps/Panopto/issues/5
 * Fix: fixed bug "No hostname prefix for thumbailUrl" https://github.com/fluxapps/Panopto/pull/7
